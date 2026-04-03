@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(toml|cfg|ini|yaml|yml\\)$\")",
+      "Bash(find /Users/Shared/PROYECTOS/odooclaw/odooclaw/workspace/skills/odoo-mcp/src/odoo_mcp -name \"*.py\" -exec basename {} \\\\;)",
+      "Bash(find:*)",
+      "Bash(wc -l /Users/Shared/PROYECTOS/odooclaw/odooclaw/workspace/skills/odoo-mcp/src/odoo_mcp/tools/*.py)",
+      "Bash(wc -l /Users/Shared/PROYECTOS/odooclaw/odooclaw/workspace/skills/odoo-mcp/src/odoo_mcp/services/*.py)",
+      "Bash(cp:*)",
+      "Bash(git:*)"
+    ]
+  }
+}
