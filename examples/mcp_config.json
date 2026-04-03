@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "odoo": {
+      "command": "python",
+      "args": [
+        "-m",
+        "odoo_mcp"
+      ],
+      "env": {
+        "ODOO_URL": "https://yourcompany.odoo.com",
+        "ODOO_DB": "your_database",
+        "ODOO_USERNAME": "your_username",
+        "ODOO_PASSWORD": "your_password",
+        "ODOO_MCP_DEFAULT_LIMIT": "50",
+        "ODOO_MCP_MAX_LIMIT": "80"
+      }
+    }
+  }
+}
