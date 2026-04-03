@@ -2,6 +2,8 @@
 
 A modular, type-safe, and secure MCP (Model Context Protocol) server for interacting with Odoo 18 ORM.
 
+**mcp-name: io.github.nicolasramos/odoo-mcp**
+
 ## Overview
 
 Odoo MCP Server provides a comprehensive interface to Odoo 18 through the MCP protocol, enabling LLMs (Large Language Models) to interact with Odoo in a secure, controlled manner. The server replaces monolithic CRUD access with granular tools for specific business operations while respecting Odoo's native security model.

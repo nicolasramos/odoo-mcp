@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "odoo-mcp"
-version = "1.0.0"
+name = "odoo-18-mcp-server"
+version = "1.0.1"
 description = "A modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,7 +31,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "apispec",
     "dateparser",
-    "openupgradelib @ git+https://github.com/OCA/openupgradelib.git@master",
+    "openupgradelib>=3.12.0",
     "langchain-core",
     "langchain-openai",
     "langgraph",
@@ -66,13 +66,11 @@ Repository = "https://github.com/nicolasramos/odoo-mcp"
 Issues = "https://github.com/nicolasramos/odoo-mcp/issues"
 
 [project.scripts]
-odoo-mcp = "odoo_mcp:main"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
+odoo-mcp-server = "odoo_mcp:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["odoo_mcp*"]
 
 [tool.black]
 line-length = 100

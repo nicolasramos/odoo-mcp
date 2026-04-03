@@ -1,0 +1,57 @@
+"""Setup configuration for odoo-mcp-server."""
+
+from setuptools import setup, find_packages
+
+setup(
+    name="odoo-18-mcp-server",
+    version="1.0.1",
+    description="A modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    author="Nicolás Ramos",
+    author_email="nicolasramos@users.noreply.github.com",
+    url="https://github.com/nicolasramos/odoo-mcp",
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
+    python_requires=">=3.11",
+    install_requires=[
+        "fastmcp>=0.1.0",
+        "mcp-server>=0.1.0",
+        "pydantic>=2.0.0",
+        "requests>=2.31.0",
+        "python-dotenv>=1.0.0",
+        "apispec",
+        "dateparser",
+        "openupgradelib>=3.12.0",
+        "langchain-core",
+        "langchain-openai",
+        "langgraph",
+        "numpy",
+        "numpy-financial==1.0.0",
+        "openpyxl",
+        "pandas",
+        "pdf2image",
+        "pypdf",
+        "pytesseract",
+        "regex",
+        "schwifty==2024.4.0",
+        "unicodecsv",
+        "unidecode",
+        "xlrd",
+    ],
+    entry_points={
+        "console_scripts": [
+            "odoo-mcp-server = odoo_mcp:main",
+        ],
+    },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    include_package_data=True,
+)

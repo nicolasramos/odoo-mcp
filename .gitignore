@@ -149,3 +149,22 @@ Thumbs.db
 # Project specific
 *.bak
 .pytest_cache/
+
+# Sensitive files (tokens, credentials, etc.)
+*mcpregistry*token*
+*token*
+*credential*
+*.pem
+*.key
+*.secret
+
+# Internal publishing guides and scripts
+SESSION_SUMMARY.md
+QUICK_START_PUBLISHING.md
+PUBLISHING_SUMMARY.md
+scripts/
+docs/*PUBLISHING.md
+docs/DEPLOYMENT.md
+
+# Claude specific
+.claude/
