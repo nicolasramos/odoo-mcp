@@ -1,0 +1,42 @@
+{
+  "name": "@nicolasramos/odoo-mcp-server",
+  "version": "1.0.0",
+  "description": "Complete MCP server for Odoo 18 ERP with 38 tools for business operations",
+  "author": "Nicolás Ramos <nicolasramos@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolasramos/odoo-mcp.git"
+  },
+  "homepage": "https://github.com/nicolasramos/odoo-mcp",
+  "bugs": {
+    "url": "https://github.com/nicolasramos/odoo-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "odoo",
+    "erp",
+    "crm",
+    "accounting",
+    "python",
+    "pydantic",
+    "llm",
+    "ai"
+  ],
+  "mcp": {
+    "command": "python",
+    "args": ["-m", "odoo_mcp"],
+    "env": {
+      "ODOO_URL": "https://yourcompany.odoo.com",
+      "ODOO_DB": "database",
+      "ODOO_USERNAME": "username",
+      "ODOO_PASSWORD": "password",
+      "ODOO_MCP_DEFAULT_LIMIT": "50",
+      "ODOO_MCP_MAX_LIMIT": "80"
+    }
+  },
+  "scripts": {
+    "test": "pytest tests/"
+  }
+}

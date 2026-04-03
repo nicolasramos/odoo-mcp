@@ -7,7 +7,11 @@
       "Bash(wc -l /Users/Shared/PROYECTOS/odooclaw/odooclaw/workspace/skills/odoo-mcp/src/odoo_mcp/tools/*.py)",
       "Bash(wc -l /Users/Shared/PROYECTOS/odooclaw/odooclaw/workspace/skills/odoo-mcp/src/odoo_mcp/services/*.py)",
       "Bash(cp:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "WebSearch",
+      "mcp__web-reader__webReader",
+      "mcp__web-search-prime__web_search_prime",
+      "Bash(chmod +x:*)"
     ]
   }
 }
