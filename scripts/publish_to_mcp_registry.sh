@@ -37,22 +37,20 @@ echo ""
 cd /Users/Shared/PROYECTOS/odoo-mcp
 
 # Publish using the CLI
-echo "🎯 Publishing to MCP Registry..."
-echo ""
-echo "This will:"
-echo "1. Authenticate with GitHub OAuth"
-echo "2. Validate your server.json"
-echo "3. Publish io.github.nicolasramos.odoo-mcp to the registry"
-echo ""
-read -p "Continue? (y/N) " -n 1 -r
-echo
-echo ""
+    echo "🎯 Publishing to MCP Registry..."
+    echo ""
+    echo "This will:"
+    echo "1. Authenticate with GitHub OAuth"
+    echo "2. Validate your server.json"
+    echo "3. Publish io.github.nicolasramos.odoo-mcp to the registry"
+    echo ""
+    read -p "Continue? (y/N) " -n 1 -r
+    echo
+    echo ""
 
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Run the publisher
-    /tmp/registry/bin/mcp-publisher publish \
-        --server-path /Users/Shared/PROYECTOS/odoo-mcp/server.json \
-        --auth github
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Run the publisher with full path
+        /tmp/registry/bin/mcp-publisher login github
 
     echo ""
     echo "✅ Successfully published to MCP Registry!"
