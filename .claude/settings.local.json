@@ -41,7 +41,8 @@
       "Bash(docker push:*)",
       "Bash(curl -s https://hub.docker.com/v2/repositories/nicolasrameses/odoo-18-mcp-server/tags)",
       "Bash(curl -s \"https://registry.modelcontextprotocol.io/servers/io.github.nicolasramos%2Fodoo-mcp\")",
-      "Bash(curl -s \"https://registry.modelcontextprotocol.io/v0.1/servers/io.github.nicolasramos/odoo-mcp\")"
+      "Bash(curl -s \"https://registry.modelcontextprotocol.io/v0.1/servers/io.github.nicolasramos/odoo-mcp\")",
+      "Bash(grep -v \"^\\\\.\\\\.?\\\\$\")"
     ]
   }
 }
