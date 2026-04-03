@@ -1,0 +1,278 @@
+{
+  "name": "Odoo MCP Server",
+  "id": "io.github.nicolasramos.odoo-mcp",
+  "version": "1.0.0",
+  "description": "Complete MCP server for Odoo 18 with 38 tools for sales, accounting, projects, inventory, HR, CRM, and more. Features native security delegation, full Pydantic validation, multi-company support, and comprehensive documentation.",
+  "author": {
+    "name": "Nicolás Ramos",
+    "email": "nicolasramos@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "odoo",
+    "erp",
+    "crm",
+    "accounting",
+    "sales",
+    "projects",
+    "inventory",
+    "hr",
+    "python",
+    "pydantic",
+    "business"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolasramos/odoo-mcp.git"
+  },
+  "homepage": "https://github.com/nicolasramos/odoo-mcp",
+  "documentation": "https://github.com/nicolasramos/odoo-mcp/blob/main/README.md",
+  "bugs": "https://github.com/nicolasramos/odoo-mcp/issues",
+  "runtime": {
+    "type": "python",
+    "command": "python",
+    "args": ["-m", "odoo_mcp"],
+    "env": {
+      "ODOO_URL": {
+        "description": "URL of your Odoo instance (e.g., https://yourcompany.odoo.com)",
+        "required": true
+      },
+      "ODOO_DB": {
+        "description": "Name of your Odoo database",
+        "required": true
+      },
+      "ODOO_USERNAME": {
+        "description": "Odoo username for authentication",
+        "required": true
+      },
+      "ODOO_PASSWORD": {
+        "description": "Odoo password for authentication",
+        "required": true,
+        "sensitive": true
+      },
+      "ODOO_MCP_DEFAULT_LIMIT": {
+        "description": "Default limit for search results (default: 50)",
+        "required": false,
+        "default": "50"
+      },
+      "ODOO_MCP_MAX_LIMIT": {
+        "description": "Maximum limit for search results (default: 80)",
+        "required": false,
+        "default": "80"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "odoo_search",
+      "description": "Search Odoo records with domain filters",
+      "category": "core"
+    },
+    {
+      "name": "odoo_read",
+      "description": "Read specific Odoo record IDs",
+      "category": "core"
+    },
+    {
+      "name": "odoo_create",
+      "description": "Create new Odoo records",
+      "category": "core"
+    },
+    {
+      "name": "odoo_write",
+      "description": "Update existing Odoo records",
+      "category": "core"
+    },
+    {
+      "name": "odoo_find_partner",
+      "description": "Find or create partners/customers",
+      "category": "partners"
+    },
+    {
+      "name": "odoo_get_partner_summary",
+      "description": "Get comprehensive partner information with related documents",
+      "category": "partners"
+    },
+    {
+      "name": "odoo_create_sale_order",
+      "description": "Create new sale orders with product lines",
+      "category": "sales"
+    },
+    {
+      "name": "odoo_confirm_sale_order",
+      "description": "Confirm draft sale orders",
+      "category": "sales"
+    },
+    {
+      "name": "odoo_find_sale_order",
+      "description": "Search sale orders by customer, state, or number",
+      "category": "sales"
+    },
+    {
+      "name": "odoo_get_sale_order_summary",
+      "description": "Get detailed sale order information",
+      "category": "sales"
+    },
+    {
+      "name": "odoo_find_pending_invoices",
+      "description": "Find unpaid invoices (Odoo 18 compatible with payment_state)",
+      "category": "accounting"
+    },
+    {
+      "name": "odoo_get_invoice_summary",
+      "description": "Get complete invoice details with lines",
+      "category": "accounting"
+    },
+    {
+      "name": "odoo_register_payment",
+      "description": "Register payments for invoices",
+      "category": "accounting"
+    },
+    {
+      "name": "odoo_create_task",
+      "description": "Create new project tasks",
+      "category": "projects"
+    },
+    {
+      "name": "odoo_update_task",
+      "description": "Update task status, assignment, or deadline",
+      "category": "projects"
+    },
+    {
+      "name": "odoo_find_task",
+      "description": "Search project tasks",
+      "category": "projects"
+    },
+    {
+      "name": "odoo_log_timesheet",
+      "description": "Log work time on projects or tasks",
+      "category": "projects"
+    },
+    {
+      "name": "odoo_create_activity",
+      "description": "Schedule follow-up activities on records",
+      "category": "activities"
+    },
+    {
+      "name": "odoo_list_pending_activities",
+      "description": "List pending activities by user or model",
+      "category": "activities"
+    },
+    {
+      "name": "odoo_mark_activity_done",
+      "description": "Complete activities with optional feedback",
+      "category": "activities"
+    },
+    {
+      "name": "odoo_post_chatter_message",
+      "description": "Post messages to record chatter",
+      "category": "communication"
+    },
+    {
+      "name": "odoo_create_calendar_event",
+      "description": "Create calendar meetings/appointments with attendees",
+      "category": "calendar"
+    },
+    {
+      "name": "odoo_create_lead",
+      "description": "Create CRM leads/opportunities",
+      "category": "crm"
+    },
+    {
+      "name": "odoo_get_product_stock",
+      "description": "Check product stock quantities",
+      "category": "inventory"
+    },
+    {
+      "name": "odoo_create_purchase_order",
+      "description": "Create purchase orders for vendors",
+      "category": "purchasing"
+    },
+    {
+      "name": "odoo_create_vendor_invoice",
+      "description": "Create vendor bills",
+      "category": "accounting"
+    },
+    {
+      "name": "odoo_create_helpdesk_ticket",
+      "description": "Create helpdesk support tickets",
+      "category": "helpdesk"
+    },
+    {
+      "name": "odoo_get_model_schema",
+      "description": "Get model field definitions for introspection",
+      "category": "introspection"
+    },
+    {
+      "name": "odoo_get_capabilities",
+      "description": "List available operations and models",
+      "category": "introspection"
+    },
+    {
+      "name": "odoo_get_record_summary",
+      "description": "Get record overview with related data",
+      "category": "generic"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "odoo://context/odoo18-fields-reference",
+      "name": "Odoo 18 Field Reference",
+      "description": "Critical reference for Odoo 18 field changes from older versions"
+    },
+    {
+      "uri": "odoo://models",
+      "name": "Available Models",
+      "description": "List of models available via introspection"
+    },
+    {
+      "uri": "odoo://model/{model}/schema",
+      "name": "Model Schema",
+      "description": "Field definitions for any Odoo model"
+    },
+    {
+      "uri": "odoo://record/{model}/{id}/summary",
+      "name": "Record Summary",
+      "description": "Concise overview of any Odoo record"
+    },
+    {
+      "uri": "odoo://record/{model}/{id}/chatter_summary",
+      "name": "Chatter Summary",
+      "description": "Communication history for any Odoo record"
+    }
+  ],
+  "capabilities": {
+    "security": {
+      "native_acl_delegation": true,
+      "model_allowlist": true,
+      "field_denylist": true,
+      "unlink_blocking": true,
+      "data_redaction": true
+    },
+    "features": {
+      "multi_company": true,
+      "odoo_18_compatible": true,
+      "pydantic_validation": true,
+      "observability": true,
+      "audit_logging": true
+    },
+    "supported_models": [
+      "res.partner",
+      "product.product",
+      "product.template",
+      "sale.order",
+      "sale.order.line",
+      "account.move",
+      "account.move.line",
+      "project.task",
+      "crm.lead",
+      "purchase.order",
+      "purchase.order.line",
+      "mail.message",
+      "mail.activity",
+      "helpdesk.ticket",
+      "contract.contract",
+      "contract.line"
+    ]
+  }
+}
