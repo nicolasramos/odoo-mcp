@@ -31,7 +31,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "apispec",
     "dateparser",
-    "git+https://github.com/OCA/openupgradelib.git@master",
+    "openupgradelib @ git+https://github.com/OCA/openupgradelib.git@master",
     "langchain-core",
     "langchain-openai",
     "langgraph",
