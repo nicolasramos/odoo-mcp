@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "odoo-18-mcp-server"
-version = "1.0.1"
+version = "2.0.0"
 description = "A modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"
 readme = "README.md"
 requires-python = ">=3.11"
