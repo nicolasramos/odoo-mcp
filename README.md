@@ -4,6 +4,10 @@ A modular, type-safe, and secure MCP (Model Context Protocol) server for interac
 
 **mcp-name: io.github.nicolasramos/odoo-mcp**
 
+[![PyPI version](https://badge.fury.io/py/odoo-18-mcp-server.svg)](https://badge.fury.io/py/odoo-18-mcp-server)
+[![Python Versions](https://img.shields.io/pypi/pyversions/odoo-18-mcp-server.svg)](https://pypi.org/project/odoo-18-mcp-server/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Overview
 
 Odoo MCP Server provides a comprehensive interface to Odoo 18 through the MCP protocol, enabling LLMs (Large Language Models) to interact with Odoo in a secure, controlled manner. The server replaces monolithic CRUD access with granular tools for specific business operations while respecting Odoo's native security model.
@@ -30,6 +34,12 @@ The server is built with a **6-layer architecture**:
 - **📝 Odoo 18 Compatible**: Updated for latest Odoo 18 field changes (customer_rank, supplier_rank, payment_state)
 
 ## Installation
+
+### From PyPI (Recommended)
+
+```bash
+pip install odoo-18-mcp-server
+```
 
 ### From Source
 
