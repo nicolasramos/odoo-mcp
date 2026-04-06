@@ -10,13 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### BREAKING CHANGES
 - Removed dependency on custom `/odooclaw/call_kw_as_user` endpoint
 - Server now works with ANY standard Odoo 18 instance without custom modules
-- All RPC operations execute as the authenticated user only (no user delegation)
-- Removed `sender_id` parameter from all internal RPC methods
+- All RPC operations execute as the authenticated session user
 
 ### Changed
 - Simplified `OdooClient.call_kw()` to use only standard Odoo JSON-RPC endpoints
-- Removed `_call_kw_as_user()` method completely
-- Updated all services (15 files) and tools (3 files) to remove `sender_id` parameter
+- Kept `sender_id` in tool payloads as optional audit/context metadata for backward compatibility
 - Updated security model documentation to reflect standard Odoo authentication
 - Changed title from "Conectando Claude con Odoo" to "Conectando LLMs con Odoo"
 
@@ -49,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. **Update your dependencies:**
    ```bash
-   pip install --upgrade odoo-18-mcp-server==2.0.0
+   pip install --upgrade odoo-mcp==2.0.0
    ```
 
 2. **Remove custom Odoo modules:**

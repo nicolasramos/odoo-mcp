@@ -3,48 +3,43 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "odoo-18-mcp-server"
+name = "odoo-mcp"
 version = "2.0.0"
 description = "A modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [
-    {name = "Nicolás Ramos", email = "nicolasramos@users.noreply.github.com"}
-]
+license = { text = "MIT" }
+authors = [{ name = "Nicolás Ramos", email = "nicolasramos@users.noreply.github.com" }]
 keywords = ["odoo", "mcp", "orm", "api", "server"]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-
 dependencies = [
-    "fastmcp>=0.1.0",
-    "mcp-server>=0.1.0",
-    "pydantic>=2.0.0",
-    "requests>=2.31.0",
-    "python-dotenv>=1.0.0",
-    "apispec",
-    "dateparser",
-    "openupgradelib>=3.12.0",
-    "regex",
-    "unicodecsv",
-    "unidecode",
+  "fastmcp>=0.1.0",
+  "mcp-server>=0.1.0",
+  "pydantic>=2.0.0",
+  "requests>=2.31.0",
+  "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.21.0",
-    "black>=23.0.0",
-    "ruff>=0.1.0",
-    "mypy>=1.0.0",
+  "pytest>=7.0.0",
+  "pytest-cov>=4.0.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-mock>=3.10.0",
+  "black>=23.0.0",
+  "ruff>=0.1.0",
+  "mypy>=1.0.0",
+  "pre-commit>=3.0.0",
+  "build>=1.2.0",
+  "twine>=5.0.0",
 ]
 
 [project.urls]
@@ -54,7 +49,9 @@ Repository = "https://github.com/nicolasramos/odoo-mcp"
 Issues = "https://github.com/nicolasramos/odoo-mcp/issues"
 
 [project.scripts]
-odoo-mcp-server = "odoo_mcp:main"
+odoo-mcp = "odoo_mcp.cli:main"
+odoo-mcp-server = "odoo_mcp.cli:main"
+odoo-18-mcp-server = "odoo_mcp.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -62,11 +59,10 @@ include = ["odoo_mcp*"]
 
 [tool.black]
 line-length = 100
-target-version = ['py311']
-include = '\.pyi?$'
+target-version = ["py311"]
+include = '\\.pyi?$'
 extend-exclude = '''
 /(
-  # directories
   \.eggs
   | \.git
   | \.hg
@@ -81,20 +77,8 @@ extend-exclude = '''
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-]
-ignore = [
-    "E501",  # line too long (handled by black)
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-]
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+ignore = ["E501", "B008", "C901"]
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
@@ -113,9 +97,7 @@ warn_no_return = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = [
-    "odoorpc.*",
-]
+module = ["odoorpc.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -124,36 +106,30 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
-    "-v",
-    "--strict-markers",
-    "--cov=src/odoo_mcp",
-    "--cov-report=term-missing",
-    "--cov-report=html",
+  "-v",
+  "--strict-markers",
+  "--cov=src/odoo_mcp",
+  "--cov-report=term-missing",
+  "--cov-report=html",
 ]
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
+  "unit: marks tests as unit tests",
 ]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning",
-]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::PendingDeprecationWarning"]
 
 [tool.coverage.run]
 source = ["src"]
-omit = [
-    "*/tests/*",
-    "*/test_*.py",
-]
+omit = ["*/tests/*", "*/test_*.py"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "@abstractmethod",
+  "pragma: no cover",
+  "def __repr__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "@abstractmethod",
 ]

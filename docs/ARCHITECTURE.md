@@ -47,7 +47,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 **Purpose**: Base technical components for Odoo RPC communication
 
 **Components**:
-- `client.py` - Odoo RPC client with native security delegation
+- `client.py` - Odoo RPC client using standard JSON-RPC endpoints
 - `session.py` - Odoo authentication and session management
 - `exceptions.py` - Custom exception hierarchy
 - `domains.py` - Odoo domain validation
@@ -57,7 +57,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 **Key Features**:
 - JSON-RPC communication with Odoo
 - Automatic re-authentication
-- Native security delegation via `/odooclaw/call_kw_as_user`
+- Standard JSON-RPC calls via `/web/dataset/call_kw/{model}/{method}`
 - Domain syntax validation
 - Response serialization
 
@@ -72,7 +72,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 - `redaction.py` - Sensitive data redaction
 
 **Key Features**:
-- **Model Allowlist**: Only 28 approved models
+- **Model Allowlist**: Access restricted to explicitly approved models
 - **Field Denylist**: Protected fields cannot be written directly
 - **Unlink Blocking**: All delete operations are blocked
 - **Action Guards**: Only workflow actions permitted
@@ -194,7 +194,7 @@ Tool Request → Schema Validation (Layer 3)
 
 ### 1. Security by Design
 
-- **Native Delegation**: All operations run under user context via `/odooclaw/call_kw_as_user`
+- **Standard Odoo Auth**: All operations run as the authenticated Odoo session user
 - **Defense in Depth**: Multiple security layers (allowlists, denylists, guards)
 - **Default Deny**: Models not in allowlist are inaccessible
 - **Audit Trail**: All operations logged with user context
@@ -257,8 +257,8 @@ Tool Request → Schema Validation (Layer 3)
 ┌─────────────────────────────────────────────────────────────┐
 │                    Odoo 18 Instance                         │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │              /odooclaw/call_kw_as_user               │  │
-│  │              (Native Security Delegation)            │  │
+│  │      /web/dataset/call_kw/{model}/{method}          │  │
+│  │            (Standard Odoo JSON-RPC)                 │  │
 │  └──────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │              Odoo ORM & Security                     │  │
@@ -314,7 +314,7 @@ Tool Request → Schema Validation (Layer 3)
 3. **Validate Inputs**: Always use schemas for validation
 4. **Log Audits**: Security-relevant operations must be logged
 5. **Redact Secrets**: Never return passwords/tokens in responses
-6. **Use Native Delegation**: Leverage Odoo's security model
+6. **Use Standard Odoo Auth**: Leverage Odoo's built-in ACL and Record Rules
 
 ---
 

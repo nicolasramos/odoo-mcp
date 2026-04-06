@@ -3,6 +3,7 @@ import sys
 from typing import Any
 from functools import lru_cache
 from mcp.server.fastmcp import FastMCP
+from dotenv import load_dotenv
 
 from odoo_mcp.core.session import OdooSession
 from odoo_mcp.core.client import OdooClient
@@ -79,6 +80,8 @@ from odoo_mcp.services.hr_service import log_timesheet
 _logger = get_logger("server")
 mcp = FastMCP("odoo-mcp")
 
+load_dotenv()
+
 
 @lru_cache(maxsize=1)
 def get_odoo_client() -> OdooClient:
@@ -88,7 +91,10 @@ def get_odoo_client() -> OdooClient:
     pwd = os.environ.get("ODOO_PASSWORD")
 
     if not all([url, db, user, pwd]):
-        _logger.error("Missing mandatory Odoo environment variables.")
+        _logger.error(
+            "Missing mandatory Odoo environment variables. "
+            "Required: ODOO_URL, ODOO_DB, ODOO_USERNAME, ODOO_PASSWORD"
+        )
         sys.exit(1)
 
     session = OdooSession(url, db, user, pwd)
@@ -171,9 +177,7 @@ def get_resource_record_summary(model: str, id: str) -> str:
     client = get_odoo_client()
     import json
 
-    res = generic.odoo_get_record_summary(
-        client, client.odoo_session.uid, model, int(id)
-    )
+    res = generic.odoo_get_record_summary(client, client.odoo_session.uid, model, int(id))
     return json.dumps(res, indent=2)
 
 
@@ -211,6 +215,20 @@ def odoo_read(payload: OdooReadSchema) -> list:
             payload.model,
             payload.ids,
             payload.fields,
+        )
+
+
+@mcp.tool()
+def odoo_search_read(payload: OdooSearchReadSchema) -> list:
+    with measure_time("odoo_search_read"):
+        client = get_odoo_client()
+        return records.odoo_search_read(
+            client,
+            payload.sender_id or client.odoo_session.uid,
+            payload.model,
+            payload.domain,
+            payload.fields,
+            payload.limit,
         )
 
 

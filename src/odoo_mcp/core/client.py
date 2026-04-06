@@ -23,10 +23,13 @@ class OdooClient:
         method: str,
         args: Optional[List[Any]] = None,
         kwargs: Optional[Dict[str, Any]] = None,
+        sender_id: Optional[int] = None,
     ) -> Any:
         """
         Executes a method on an Odoo model using standard Odoo JSON-RPC endpoint.
-        All operations are executed as the authenticated user (bot/admin user).
+
+        `sender_id` is accepted for backward compatibility and audit metadata,
+        but execution always occurs as the authenticated Odoo session user.
         """
         self._ensure_authenticated()
         args = args or []
@@ -54,9 +57,7 @@ class OdooClient:
 
     def _do_post(self, endpoint: str, payload: dict) -> Any:
         try:
-            response = self.odoo_session.session.post(
-                endpoint, json=payload, timeout=30
-            )
+            response = self.odoo_session.session.post(endpoint, json=payload, timeout=30)
             response.raise_for_status()
             result = response.json()
 
@@ -81,30 +82,25 @@ class OdooClient:
         method: str,
         args: Optional[List[Any]] = None,
         kwargs: Optional[Dict[str, Any]] = None,
+        sender_id: Optional[int] = None,
         default: Any = None,
     ) -> Any:
         try:
-            return self.call_kw(
-                model, method, args=args, kwargs=kwargs
-            )
+            return self.call_kw(model, method, args=args, kwargs=kwargs, sender_id=sender_id)
         except OdooRPCError:
             return default
 
-    def get_model_fields(
-        self, model: str
-    ) -> Dict[str, Any]:
-        return self.call_kw(model, "fields_get")
+    def get_model_fields(self, model: str, sender_id: Optional[int] = None) -> Dict[str, Any]:
+        return self.call_kw(model, "fields_get", sender_id=sender_id)
 
     def try_get_model_fields(
-        self, model: str
+        self, model: str, sender_id: Optional[int] = None
     ) -> Optional[Dict[str, Any]]:
-        return self.try_call_kw(model, "fields_get", default=None)
+        return self.try_call_kw(model, "fields_get", sender_id=sender_id, default=None)
 
-    def model_exists(self, model: str) -> bool:
-        return self.try_get_model_fields(model) is not None
+    def model_exists(self, model: str, sender_id: Optional[int] = None) -> bool:
+        return self.try_get_model_fields(model, sender_id=sender_id) is not None
 
-    def field_exists(
-        self, model: str, field_name: str
-    ) -> bool:
-        fields = self.try_get_model_fields(model)
+    def field_exists(self, model: str, field_name: str, sender_id: Optional[int] = None) -> bool:
+        fields = self.try_get_model_fields(model, sender_id=sender_id)
         return bool(fields and field_name in fields)

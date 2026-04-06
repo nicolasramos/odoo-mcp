@@ -1,11 +1,7 @@
 {
   "mcpServers": {
     "odoo": {
-      "command": "python",
-      "args": [
-        "-m",
-        "odoo_mcp"
-      ],
+      "command": "odoo-mcp",
       "env": {
         "ODOO_URL": "https://yourcompany.odoo.com",
         "ODOO_DB": "your_database",

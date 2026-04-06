@@ -6,12 +6,12 @@
     "url": "https://github.com/nicolasramos/odoo-mcp.git",
     "source": "github"
   },
-  "version": "1.0.1",
+  "version": "2.0.0",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "odoo-18-mcp-server",
-      "version": "1.0.1",
+      "identifier": "odoo-mcp",
+      "version": "2.0.0",
       "runtimeHint": "python",
       "transport": {
         "type": "stdio"

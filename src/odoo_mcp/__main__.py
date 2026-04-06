@@ -1,6 +1,8 @@
-"""Main entry point for running the Odoo MCP server as a module."""
+"""Main entry point for `python -m odoo_mcp`."""
 
-from odoo_mcp.server import mcp
+import sys
+
+from odoo_mcp.cli import main
 
 if __name__ == "__main__":
-    mcp.run()
+    raise SystemExit(main(sys.argv[1:]))

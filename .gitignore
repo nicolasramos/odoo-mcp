@@ -158,14 +158,12 @@ Thumbs.db
 *.key
 *.secret
 
-# Internal publishing guides and scripts
+# Internal publishing drafts/scripts
 SESSION_SUMMARY.md
 QUICK_START_PUBLISHING.md
 PUBLISHING_SUMMARY.md
-PYPI_SETUP.md
 scripts/
 docs/*PUBLISHING.md
-docs/DEPLOYMENT.md
 
 # Draft posts and marketing materials (local only)
 LINKEDIN_POST.md

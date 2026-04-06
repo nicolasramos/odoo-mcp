@@ -1,6 +1,6 @@
 {
-  "name": "@nicolasramos/odoo-mcp-server",
-  "version": "1.0.0",
+  "name": "@nicolasramos/odoo-mcp",
+  "version": "2.0.0",
   "description": "Complete MCP server for Odoo 18 ERP with 38 tools for business operations",
   "author": "Nicolás Ramos <nicolasramos@users.noreply.github.com>",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "ai"
   ],
   "mcp": {
-    "command": "python",
-    "args": ["-m", "odoo_mcp"],
+    "command": "odoo-mcp",
+    "args": [],
     "env": {
       "ODOO_URL": "https://yourcompany.odoo.com",
       "ODOO_DB": "database",
