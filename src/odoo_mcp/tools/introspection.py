@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 def odoo_model_schema(client: OdooClient, user_id: int, model: str) -> str:
     """Retrieve and serialize fields schema for a given model."""
     try:
-        fields_info = client.call_kw(model, "fields_get", sender_id=user_id)
+        fields_info = client.call_kw(model, "fields_get")
         summary = {}
         for fname, fprops in fields_info.items():
             summary[fname] = {

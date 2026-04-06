@@ -11,7 +11,7 @@ _logger = get_logger("helpdesk_service")
 
 
 def _helpdesk_fields(client: OdooClient, user_id: int) -> Optional[dict]:
-    return client.try_get_model_fields("helpdesk.ticket", sender_id=user_id)
+    return client.try_get_model_fields("helpdesk.ticket")
 
 
 def _ticket_values(
@@ -71,7 +71,7 @@ def create_helpdesk_ticket(
     )
     _logger.info(f"Creating helpdesk ticket: {name}")
     ticket_id = client.call_kw(
-        "helpdesk.ticket", "create", args=[values], sender_id=user_id
+        "helpdesk.ticket", "create", args=[values]
     )
     return build_success_response(
         "helpdesk.create_ticket",
@@ -135,7 +135,7 @@ def draft_ticket_email(
 ) -> dict:
     helpdesk_fields = _helpdesk_fields(client, user_id)
     compose_fields = client.try_get_model_fields(
-        "mail.compose.message", sender_id=user_id
+        "mail.compose.message"
     )
     if not helpdesk_fields or not compose_fields:
         return build_unsupported_response(

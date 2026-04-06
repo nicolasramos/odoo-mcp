@@ -29,7 +29,7 @@ def create_lead(
         vals["description"] = description
         
     try:
-        lead_id = client.call_kw("crm.lead", "create", sender_id=sender_id, args=[vals])
+        lead_id = client.call_kw("crm.lead", "create", args=[vals])
         return lead_id
     except Exception as e:
         _logger.error(f"Error creating lead: {e}")

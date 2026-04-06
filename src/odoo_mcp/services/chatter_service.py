@@ -39,7 +39,7 @@ def create_activity(
         values["user_id"] = assign_to
 
     _logger.info(f"Creating activity for {model} id {res_id}")
-    return client.call_kw("mail.activity", "create", args=[values], sender_id=user_id)
+    return client.call_kw("mail.activity", "create", args=[values])
 
 
 def list_pending_activities(
@@ -111,7 +111,7 @@ def create_activity_summary(
     note: str = None,
     assign_to: int = None,
 ) -> dict:
-    if not client.model_exists("mail.activity", sender_id=user_id):
+    if not client.model_exists("mail.activity"):
         return build_unsupported_response(
             "activities.create_summary",
             "mail.activity model is not available.",
@@ -147,7 +147,7 @@ def create_activity_summary(
 def close_activity_with_reason(
     client: OdooClient, user_id: int, activity_id: int, reason: str = None
 ) -> dict:
-    if not client.model_exists("mail.activity", sender_id=user_id):
+    if not client.model_exists("mail.activity"):
         return build_unsupported_response(
             "activities.close_with_reason",
             "mail.activity model is not available.",

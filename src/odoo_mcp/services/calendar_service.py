@@ -30,7 +30,7 @@ def create_calendar_event(
         vals["partner_ids"] = [(6, 0, partner_ids)]
         
     try:
-        event_id = client.call_kw("calendar.event", "create", sender_id=sender_id, args=[vals])
+        event_id = client.call_kw("calendar.event", "create", args=[vals])
         return event_id
     except Exception as e:
         _logger.error(f"Error creating calendar event: {e}")

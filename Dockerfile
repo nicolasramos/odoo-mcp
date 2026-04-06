@@ -15,10 +15,15 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install the package from PyPI
-RUN pip install --no-cache-dir odoo-18-mcp-server==1.0.1
+# Install the package from source
+WORKDIR /tmp
+RUN git clone --depth 1 --branch main https://github.com/nicolasramos/odoo-mcp.git && \
+    cd odoo-mcp && \
+    pip install --no-cache-dir . && \
+    cd / && rm -rf /tmp/odoo-mcp
 
 # Create a non-root user
 RUN useradd -m -u 1000 mcpuser && \

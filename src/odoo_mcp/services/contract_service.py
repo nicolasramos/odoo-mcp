@@ -8,11 +8,11 @@ from odoo_mcp.services.capability_service import (
 
 
 def _line_fields(client: OdooClient, user_id: int) -> Optional[dict]:
-    return client.try_get_model_fields("contract.line", sender_id=user_id)
+    return client.try_get_model_fields("contract.line")
 
 
 def _contract_fields(client: OdooClient, user_id: int) -> Optional[dict]:
-    return client.try_get_model_fields("contract.contract", sender_id=user_id)
+    return client.try_get_model_fields("contract.contract")
 
 
 def _first_present(fields: dict, *names: str) -> Optional[str]:
@@ -68,7 +68,7 @@ def create_contract_line(
         values["date_end"] = date_end
 
     line_id = client.call_kw(
-        "contract.line", "create", args=[values], sender_id=user_id
+        "contract.line", "create", args=[values]
     )
     return build_success_response(
         "contracts.create_line", line_id=line_id, values=values
@@ -104,7 +104,7 @@ def close_contract_line(
         )
 
     client.call_kw(
-        "contract.line", "write", args=[[line_id], values], sender_id=user_id
+        "contract.line", "write", args=[[line_id], values]
     )
     return build_success_response(
         "contracts.close_line", line_id=line_id, values=values

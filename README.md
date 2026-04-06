@@ -152,14 +152,16 @@ The server exposes **5 dynamic resources**:
 
 ## Security
 
-### Native Odoo Delegation
+### Native Odoo Security
 
-The server uses Odoo's native security model by delegating operations through the `/odooclaw/call_kw_as_user` endpoint. This ensures:
+The server authenticates with Odoo using standard JSON-RPC endpoints and executes all operations as the configured user. This ensures:
 
 - ✅ Record Rules are respected
 - ✅ Access Rights (ACL) are enforced
 - ✅ Company segregation is maintained
 - ✅ User permissions are honored
+
+**Important**: For production use, create a dedicated Odoo user with minimal required permissions for the specific models and operations you need.
 
 ### MCP Security Layers
 
@@ -260,7 +262,3 @@ Built with:
 - [FastMCP](https://github.com/jlowin/fastmcp) - MCP framework
 - [Pydantic](https://docs.pydantic.dev/) - Data validation
 - [Odoo](https://www.odoo.com/) - ERP system
-
----
-
-**Note**: This server requires an Odoo 18 instance with the `/odooclaw/call_kw_as_user` endpoint for native security delegation. Ensure your Odoo instance has this custom endpoint installed before using in production.

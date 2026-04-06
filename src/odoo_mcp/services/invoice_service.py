@@ -22,7 +22,7 @@ def create_vendor_invoice(client: OdooClient, user_id: int, partner_id: int, lin
         }))
 
     _logger.info(f"Creating vendor invoice for partner {partner_id} with {len(lines)} lines")
-    return client.call_kw("account.move", "create", args=[invoice_vals], sender_id=user_id)
+    return client.call_kw("account.move", "create", args=[invoice_vals])
 
 
 def find_pending_invoices(client: OdooClient, user_id: int, partner_id: int = None,
@@ -99,7 +99,7 @@ def get_invoice_summary(client: OdooClient, user_id: int, move_id: int) -> dict:
 
 
 def register_payment(
-    client, sender_id: int, invoice_id: int, amount: float, payment_date: str = None, journal_id: int = None
+    client, invoice_id: int, amount: float, payment_date: str = None, journal_id: int = None
 ) -> bool:
     """Register a payment for an invoice via the account.payment.register wizard."""
     vals = {

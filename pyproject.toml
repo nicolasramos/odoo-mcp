@@ -32,21 +32,9 @@ dependencies = [
     "apispec",
     "dateparser",
     "openupgradelib>=3.12.0",
-    "langchain-core",
-    "langchain-openai",
-    "langgraph",
-    "numpy",
-    "numpy-financial==1.0.0",
-    "openpyxl",
-    "pandas",
-    "pdf2image",
-    "pypdf",
-    "pytesseract",
     "regex",
-    "schwifty==2024.4.0",
     "unicodecsv",
     "unidecode",
-    "xlrd",
 ]
 
 [project.optional-dependencies]
@@ -127,8 +115,6 @@ strict_equality = true
 [[tool.mypy.overrides]]
 module = [
     "odoorpc.*",
-    "langchain.*",
-    "langgraph.*",
 ]
 ignore_missing_imports = true
 

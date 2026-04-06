@@ -13,7 +13,7 @@ def odoo_search(
     """Search for record IDs matching domain."""
     validate_domain(domain)
     return client.call_kw(
-        model, "search", args=[domain], kwargs={"limit": limit}, sender_id=user_id
+        model, "search", args=[domain], kwargs={"limit": limit}
     )
 
 
@@ -27,7 +27,7 @@ def odoo_read(
     """Read fields for a list of record IDs."""
     kwargs = {"fields": fields} if fields else {}
     records = client.call_kw(
-        model, "read", args=[ids], kwargs=kwargs, sender_id=user_id
+        model, "read", args=[ids], kwargs=kwargs
     )
     return serialize_records(records)
 
@@ -46,7 +46,7 @@ def odoo_search_read(
     if fields:
         kwargs["fields"] = fields
     records = client.call_kw(
-        model, "search_read", args=[domain], kwargs=kwargs, sender_id=user_id
+        model, "search_read", args=[domain], kwargs=kwargs
     )
     return serialize_records(records)
 
@@ -70,7 +70,7 @@ def odoo_create(
         if existing_partner_id:
             return existing_partner_id
 
-    return client.call_kw(model, "create", args=[values], sender_id=user_id)
+    return client.call_kw(model, "create", args=[values])
 
 
 def odoo_write(
@@ -80,4 +80,4 @@ def odoo_write(
     guard_model_access(model)
     guard_write_fields(values)
     audit_action("WRITE", user_id, model, ids, values)
-    return client.call_kw(model, "write", args=[ids, values], sender_id=user_id)
+    return client.call_kw(model, "write", args=[ids, values])

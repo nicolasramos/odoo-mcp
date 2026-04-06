@@ -23,23 +23,16 @@ class OdooClient:
         method: str,
         args: Optional[List[Any]] = None,
         kwargs: Optional[Dict[str, Any]] = None,
-        sender_id: Optional[int] = None,
     ) -> Any:
         """
-        Executes a method on an Odoo model.
-        If sender_id is provided, it attempts to route through the secure endpoint /odooclaw/call_kw_as_user
-        to enforce Odoo's native Record Rules and Access Rights using the delegation mechanism.
+        Executes a method on an Odoo model using standard Odoo JSON-RPC endpoint.
+        All operations are executed as the authenticated user (bot/admin user).
         """
         self._ensure_authenticated()
         args = args or []
         kwargs = kwargs or {}
 
-        # If we have a specific user (sender_id) in the context, we must impersonate to respect security.
-        if sender_id:
-            return self._call_kw_as_user(sender_id, model, method, args, kwargs)
-
-        # Otherwise, standard call_kw (executed as the admin/bot user itself)
-        # Note: In a fully strict mode, you might force sender_id on all MCP endpoints.
+        # Standard Odoo JSON-RPC endpoint
         endpoint = f"{self.odoo_session.url}/web/dataset/call_kw/{model}/{method}"
 
         # Merge session context into kwargs
@@ -59,36 +52,6 @@ class OdooClient:
 
         return self._do_post(endpoint, payload)
 
-    def _call_kw_as_user(
-        self,
-        user_id: int,
-        model: str,
-        method: str,
-        args: List[Any],
-        kwargs: Dict[str, Any],
-    ) -> Any:
-        """Delegated execution leveraging Odoo's native security via mail_bot_odooclaw endpoint."""
-        endpoint = f"{self.odoo_session.url}/odooclaw/call_kw_as_user"
-
-        # Merge session context into kwargs context
-        context = kwargs.pop("context", {})
-        merged_context = self.odoo_session.context.copy()
-        merged_context.update(context)
-
-        payload = {
-            "user_id": user_id,
-            "model": model,
-            "method": method,
-            "args": args,
-            "kwargs": kwargs,
-            "context": merged_context,
-        }
-
-        _logger.debug(
-            f"Calling endpoint {endpoint} impersonating User {user_id} on {model}.{method}"
-        )
-        return self._do_post(endpoint, payload)
-
     def _do_post(self, endpoint: str, payload: dict) -> Any:
         try:
             response = self.odoo_session.session.post(
@@ -96,10 +59,6 @@ class OdooClient:
             )
             response.raise_for_status()
             result = response.json()
-
-            # Check for generic server errors (e.g. from call_kw_as_user controller)
-            if result.get("status") == "error":
-                raise OdooRPCError(f"Delegated RPC Error: {result.get('reason')}")
 
             # Check for JSON-RPC specific errors
             if "error" in result:
@@ -109,12 +68,6 @@ class OdooClient:
                 raise OdooRPCError(f"RPC Error: {err_msg}\n{err_debug}")
 
             if "result" in result:
-                # call_kw_as_user wraps result in {"status": "ok", "result": ...}
-                if (
-                    isinstance(result["result"], dict)
-                    and result["result"].get("status") == "ok"
-                ):
-                    return result["result"].get("result")
                 return result["result"]
 
             return True
@@ -128,31 +81,30 @@ class OdooClient:
         method: str,
         args: Optional[List[Any]] = None,
         kwargs: Optional[Dict[str, Any]] = None,
-        sender_id: Optional[int] = None,
         default: Any = None,
     ) -> Any:
         try:
             return self.call_kw(
-                model, method, args=args, kwargs=kwargs, sender_id=sender_id
+                model, method, args=args, kwargs=kwargs
             )
         except OdooRPCError:
             return default
 
     def get_model_fields(
-        self, model: str, sender_id: Optional[int] = None
+        self, model: str
     ) -> Dict[str, Any]:
-        return self.call_kw(model, "fields_get", sender_id=sender_id)
+        return self.call_kw(model, "fields_get")
 
     def try_get_model_fields(
-        self, model: str, sender_id: Optional[int] = None
+        self, model: str
     ) -> Optional[Dict[str, Any]]:
-        return self.try_call_kw(model, "fields_get", sender_id=sender_id, default=None)
+        return self.try_call_kw(model, "fields_get", default=None)
 
-    def model_exists(self, model: str, sender_id: Optional[int] = None) -> bool:
-        return self.try_get_model_fields(model, sender_id=sender_id) is not None
+    def model_exists(self, model: str) -> bool:
+        return self.try_get_model_fields(model) is not None
 
     def field_exists(
-        self, model: str, field_name: str, sender_id: Optional[int] = None
+        self, model: str, field_name: str
     ) -> bool:
-        fields = self.try_get_model_fields(model, sender_id=sender_id)
+        fields = self.try_get_model_fields(model)
         return bool(fields and field_name in fields)

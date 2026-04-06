@@ -27,7 +27,7 @@ def build_success_response(capability: str, **payload: Any) -> dict:
 
 def get_capabilities(client: OdooClient, user_id: int) -> dict:
     def probe(model: str) -> Dict[str, Any]:
-        fields = client.try_get_model_fields(model, sender_id=user_id)
+        fields = client.try_get_model_fields(model)
         return {
             "available": fields is not None,
             "fields": sorted(fields.keys()) if fields else [],

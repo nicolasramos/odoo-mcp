@@ -10,17 +10,17 @@ def find_sale_order(client: OdooClient, user_id: int, name: str = None, partner_
     if state: domain.append(("state", "=", state))
     
     _logger.info(f"Finding sale orders with domain: {domain}")
-    return client.call_kw("sale.order", "search_read", args=[domain], kwargs={"fields": ["id", "name", "partner_id", "state", "amount_total", "date_order"], "limit": limit}, sender_id=user_id)
+    return client.call_kw("sale.order", "search_read", args=[domain], kwargs={"fields": ["id", "name", "partner_id", "state", "amount_total", "date_order"], "limit": limit})
 
 def get_sale_order_summary(client: OdooClient, user_id: int, order_id: int) -> dict:
-    orders = client.call_kw("sale.order", "read", args=[[order_id]], kwargs={"fields": ["name", "partner_id", "state", "amount_untaxed", "amount_tax", "amount_total", "order_line", "user_id", "invoice_status"]}, sender_id=user_id)
+    orders = client.call_kw("sale.order", "read", args=[[order_id]], kwargs={"fields": ["name", "partner_id", "state", "amount_untaxed", "amount_tax", "amount_total", "order_line", "user_id", "invoice_status"]})
     if not orders:
         return {"error": "Sale order not found"}
         
     order = orders[0]
     lines_info = []
     if order.get("order_line"):
-        lines = client.call_kw("sale.order.line", "read", args=[order["order_line"]], kwargs={"fields": ["product_id", "name", "product_uom_qty", "price_unit", "price_subtotal"]}, sender_id=user_id)
+        lines = client.call_kw("sale.order.line", "read", args=[order["order_line"]], kwargs={"fields": ["product_id", "name", "product_uom_qty", "price_unit", "price_subtotal"]})
         for line in lines:
             lines_info.append({
                 "product": line.get("product_id")[1] if line.get("product_id") else line.get("name"),
@@ -43,7 +43,7 @@ def get_sale_order_summary(client: OdooClient, user_id: int, order_id: int) -> d
     }
 
 
-def create_sale_order(client: OdooClient, sender_id: int, partner_id: int, lines: list) -> int:
+def create_sale_order(client: OdooClient, partner_id: int, lines: list) -> int:
     """Create a new sale.order with the provided lines."""
     order_vals = {
         "partner_id": partner_id,
@@ -61,12 +61,12 @@ def create_sale_order(client: OdooClient, sender_id: int, partner_id: int, lines
         # Odoo format for creation in one2many: (0, 0, values_dict)
         order_vals["order_line"].append((0, 0, line_vals))
         
-    order_id = client.call_kw("sale.order", "create", args=[order_vals], sender_id=sender_id)
+    order_id = client.call_kw("sale.order", "create", args=[order_vals])
     return order_id
 
 
-def confirm_sale_order(client: OdooClient, sender_id: int, order_id: int) -> bool:
+def confirm_sale_order(client: OdooClient, order_id: int) -> bool:
     """Confirm a sale.order (moves it from draft/sent to sale)."""
     # Equivalent to clicking "Confirm" button
-    client.call_kw("sale.order", "action_confirm", args=[[order_id]], sender_id=sender_id)
+    client.call_kw("sale.order", "action_confirm", args=[[order_id]])
     return True

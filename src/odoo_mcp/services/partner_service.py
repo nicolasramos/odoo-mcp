@@ -104,7 +104,7 @@ def find_or_create_partner(
         values["email"] = email
 
     _logger.info(f"Creating new partner: {values['name']}")
-    return client.call_kw("res.partner", "create", args=[values], sender_id=user_id)
+    return client.call_kw("res.partner", "create", args=[values])
 
 
 def get_partner_summary(client: OdooClient, user_id: int, partner_id: int) -> dict:
