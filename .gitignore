@@ -162,9 +162,16 @@ Thumbs.db
 SESSION_SUMMARY.md
 QUICK_START_PUBLISHING.md
 PUBLISHING_SUMMARY.md
+PYPI_SETUP.md
 scripts/
 docs/*PUBLISHING.md
 docs/DEPLOYMENT.md
+
+# Draft posts and marketing materials (local only)
+LINKEDIN_POST.md
+*BLOG_POST.md
+*ANNOUNCEMENT.md
+DRAFTS/
 
 # Claude specific
 .claude/
