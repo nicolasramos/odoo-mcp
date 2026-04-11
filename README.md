@@ -2,7 +2,7 @@
 
 Standalone MCP (Model Context Protocol) server for Odoo 18 over `stdio`.
 
-**MCP name:** `io.github.nicolasramos/odoo-mcp`  
+**MCP name:** `io.github.nicolasramos/odooclaw-mcp`  
 **PyPI package:** `odooclaw-mcp`  
 **Official CLI:** `odooclaw-mcp`
 
