@@ -1,4 +1,4 @@
-"""CLI entrypoint for odoo-mcp."""
+"""CLI entrypoint for odooclaw-mcp."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def _missing_required_env() -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="odoo-mcp", description="Run Odoo MCP server")
+    parser = argparse.ArgumentParser(prog="odooclaw-mcp", description="Run Odoo MCP server")
     parser.add_argument("--check-config", action="store_true", help="Validate required env vars")
     parser.add_argument("--version", action="store_true", help="Print package version and exit")
     args = parser.parse_args(argv)

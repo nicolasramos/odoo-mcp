@@ -1,6 +1,6 @@
 """Odoo MCP Server - A modular, type-safe, and secure MCP server for Odoo 18."""
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 
 def main(argv=None):

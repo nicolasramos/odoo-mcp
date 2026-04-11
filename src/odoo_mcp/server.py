@@ -80,7 +80,7 @@ from odoo_mcp.services.inventory_service import get_product_stock
 from odoo_mcp.services.hr_service import log_timesheet
 
 _logger = get_logger("server")
-mcp = FastMCP("odoo-mcp")
+mcp = FastMCP("odooclaw-mcp")
 
 load_dotenv()
 

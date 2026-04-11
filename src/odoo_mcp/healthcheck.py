@@ -1,4 +1,4 @@
-"""Container healthcheck for odoo-mcp.
+"""Container healthcheck for odooclaw-mcp.
 
 This check is intentionally local-only (no network/auth calls):
 - validates required env vars are present
