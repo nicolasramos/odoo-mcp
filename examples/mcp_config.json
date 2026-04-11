@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "odoo": {
-      "command": "odoo-mcp",
+      "command": "odooclaw-mcp",
       "env": {
         "ODOO_URL": "https://yourcompany.odoo.com",
         "ODOO_DB": "your_database",

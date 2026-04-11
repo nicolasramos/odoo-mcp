@@ -1,16 +1,16 @@
 {
-  "name": "@nicolasramos/odoo-mcp",
-  "version": "2.0.0",
+  "name": "@nicolasramos/odooclaw-mcp",
+  "version": "2.1.0",
   "description": "Complete MCP server for Odoo 18 ERP with 38 tools for business operations",
   "author": "Nicolás Ramos <nicolasramos@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nicolasramos/odoo-mcp.git"
+    "url": "https://github.com/nicolasramos/odooclaw-mcp.git"
   },
-  "homepage": "https://github.com/nicolasramos/odoo-mcp",
+  "homepage": "https://github.com/nicolasramos/odooclaw-mcp",
   "bugs": {
-    "url": "https://github.com/nicolasramos/odoo-mcp/issues"
+    "url": "https://github.com/nicolasramos/odooclaw-mcp/issues"
   },
   "keywords": [
     "mcp",
@@ -25,7 +25,7 @@
     "ai"
   ],
   "mcp": {
-    "command": "odoo-mcp",
+    "command": "odooclaw-mcp",
     "args": [],
     "env": {
       "ODOO_URL": "https://yourcompany.odoo.com",
