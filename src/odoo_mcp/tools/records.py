@@ -9,7 +9,9 @@ from odoo_mcp.services.partner_service import find_existing_partner_id
 
 
 def _clamp_limit(limit: int) -> int:
-    """Clamp limit to MAX_SEARCH_LIMIT to prevent oversized queries."""
+    """Clamp limit to MAX_SEARCH_LIMIT, treating <=0 as DEFAULT_SEARCH_LIMIT."""
+    if limit <= 0:
+        return DEFAULT_SEARCH_LIMIT
     return min(limit, MAX_SEARCH_LIMIT)
 
 

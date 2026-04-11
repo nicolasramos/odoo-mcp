@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-04-11
+
+### Changed
+- Renamed PyPI package from `odoo-mcp` to `odooclaw-mcp` (backward-compatible aliases preserved)
+- Added `guard_model_access` and `audit_action` to all 9 service-calling tools (calendar, sales, CRM, inventory, HR, invoice)
+- `observability/logging.py` now reads `LOG_LEVEL` environment variable instead of hardcoding `INFO`
+- Fixed `sender_id` parameter bugs in `invoice_service.register_payment`, `sales_service.create_sale_order`, `sales_service.confirm_sale_order`
+- Removed stale `sender_id=` kwargs from `invoice_service` call_kw calls
+- `_clamp_limit` now treats `limit <= 0` as `DEFAULT_SEARCH_LIMIT` to prevent accidental full-table dumps
+
+### Added
+- Guard wiring tests verifying tools reject disallowed models
+- `odooclaw-mcp` as primary CLI entry point
+- Docker image published to `ghcr.io/nicolasramos/odooclaw-mcp`
+- CI workflow with automated PyPI and ghcr.io publishing on tags
+
 ## [2.0.0] - 2026-04-06
 
 ### BREAKING CHANGES
@@ -63,15 +79,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Security is now enforced through Odoo's native ACL instead
 
 **Benefits of upgrading:**
-- ✅ Works with any standard Odoo 18 instance
-- ✅ Fewer dependencies (faster install, smaller footprint)
-- ✅ Simpler architecture (less to maintain)
-- ✅ Better documentation
-- ✅ No custom modules required
-
----
-
-[2.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.0.0
+- Works with any standard Odoo 18 instance
+- Fewer dependencies (faster install, smaller footprint)
+- Simpler architecture (less to maintain)
+- Better documentation
+- No custom modules required
 
 ## [1.0.0] - 2026-04-03
 
@@ -120,21 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security tests
 - Coverage reporting (>80% target)
 
-## [2.1.0] - 2026-04-11
-
-### Changed
-- Renamed PyPI package from `odoo-mcp` to `odooclaw-mcp` (backward-compatible aliases preserved)
-- Added `guard_model_access` and `audit_action` to all 9 service-calling tools (calendar, sales, CRM, inventory, HR, invoice)
-- `observability/logging.py` now reads `LOG_LEVEL` environment variable instead of hardcoding `INFO`
-- Fixed `sender_id` parameter bugs in `invoice_service.register_payment`, `sales_service.create_sale_order`, `sales_service.confirm_sale_order`
-- Removed stale `sender_id=` kwargs from `invoice_service` call_kw calls
-
-### Added
-- Guard wiring tests verifying tools reject disallowed models
-- `odooclaw-mcp` as primary CLI entry point
-- Docker image published to `ghcr.io/nicolasramos/odooclaw-mcp`
-- CI workflow with automated PyPI and ghcr.io publishing on tags
-
 ---
 
 [2.1.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.1.0
+[2.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.0.0
+[1.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v1.0.0
