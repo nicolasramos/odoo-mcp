@@ -231,12 +231,6 @@ Tool Request → Schema Validation (Layer 3)
 - **Requests** (`>=2.31.0`) - HTTP client for Odoo RPC
 - **python-dotenv** (`>=1.0.0`) - Environment configuration
 
-### Additional Dependencies
-- **LangChain** - LLM integration utilities
-- **pandas/numpy** - Data processing
-- **openpyxl** - Excel file handling
-- **pypdf/pdf2image** - PDF processing
-
 ## Deployment Architecture
 
 ```

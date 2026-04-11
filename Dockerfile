@@ -1,11 +1,11 @@
-# Dockerfile for odoo-mcp (stdio MCP server)
+# Dockerfile for odooclaw-mcp (stdio MCP server)
 FROM python:3.11-slim
 
 LABEL maintainer="Nicolás Ramos <nicolasramos@users.noreply.github.com>"
 LABEL description="MCP server for Odoo 18 with 38 business tools"
-LABEL version="2.0.0"
-LABEL org.opencontainers.image.source="https://github.com/nicolasramos/odoo-mcp"
-LABEL org.opencontainers.image.title="odoo-mcp"
+LABEL version="2.1.0"
+LABEL org.opencontainers.image.source="https://github.com/nicolasramos/odooclaw-mcp"
+LABEL org.opencontainers.image.title="odooclaw-mcp"
 LABEL org.opencontainers.image.description="Modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"
 
 WORKDIR /app
@@ -31,4 +31,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -m odoo_mcp.healthcheck || exit 1
 
 # Run the MCP server using the installed entry point
-ENTRYPOINT ["odoo-mcp"]
+ENTRYPOINT ["odooclaw-mcp"]

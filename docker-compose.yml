@@ -1,13 +1,13 @@
 services:
-  odoo-mcp:
+  odooclaw-mcp:
     build: .
-    container_name: odoo-mcp
+    container_name: odooclaw-mcp
     restart: "no"
     env_file:
       - .env
     stdin_open: true
     tty: true
-    command: ["odoo-mcp"]
+    command: ["odooclaw-mcp"]
     # MCP stdio servers are typically launched by the MCP client process.
     # This compose service is best used for local/manual runs only.
     healthcheck:

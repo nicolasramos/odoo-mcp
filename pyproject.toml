@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "odoo-mcp"
-version = "2.0.0"
+name = "odooclaw-mcp"
+version = "2.1.0"
 description = "A modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -43,12 +43,13 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/nicolasramos/odoo-mcp"
-Documentation = "https://github.com/nicolasramos/odoo-mcp/blob/main/README.md"
-Repository = "https://github.com/nicolasramos/odoo-mcp"
-Issues = "https://github.com/nicolasramos/odoo-mcp/issues"
+Homepage = "https://github.com/nicolasramos/odooclaw-mcp"
+Documentation = "https://github.com/nicolasramos/odooclaw-mcp/blob/main/README.md"
+Repository = "https://github.com/nicolasramos/odooclaw-mcp"
+Issues = "https://github.com/nicolasramos/odooclaw-mcp/issues"
 
 [project.scripts]
+odooclaw-mcp = "odoo_mcp.cli:main"
 odoo-mcp = "odoo_mcp.cli:main"
 odoo-mcp-server = "odoo_mcp.cli:main"
 odoo-18-mcp-server = "odoo_mcp.cli:main"

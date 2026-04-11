@@ -9,6 +9,8 @@ from odoo_mcp.core.session import OdooSession
 from odoo_mcp.core.client import OdooClient
 from odoo_mcp.observability.logging import get_logger
 from odoo_mcp.observability.metrics import measure_time
+from odoo_mcp.security.audit import set_session_uid, audit_action
+from odoo_mcp.security.guards import guard_model_access
 
 from odoo_mcp.tools import (
     records,
@@ -99,7 +101,9 @@ def get_odoo_client() -> OdooClient:
 
     session = OdooSession(url, db, user, pwd)
     session.authenticate()
-    return OdooClient(session)
+    client = OdooClient(session)
+    set_session_uid(session.uid)
+    return client
 
 
 # Resources (Capa 6)
@@ -162,8 +166,10 @@ def get_odoo18_fields_reference() -> str:
 
 @mcp.resource("odoo://models")
 def get_odoo_models() -> str:
-    client = get_odoo_client()
-    return "List of models available via introspect tool..."
+    from odoo_mcp.config import DEFAULT_ALLOWED_MODELS
+    import json
+
+    return json.dumps(sorted(DEFAULT_ALLOWED_MODELS), indent=2)
 
 
 @mcp.resource("odoo://model/{model_name}/schema")
@@ -461,13 +467,17 @@ def odoo_find_pending_invoices(payload: FindPendingInvoicesSchema) -> list:
     """
     with measure_time("odoo_find_pending_invoices"):
         client = get_odoo_client()
-        return find_pending_invoices(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("account.move")
+        result = find_pending_invoices(
             client,
-            payload.sender_id or client.odoo_session.uid,
+            uid,
             payload.partner_id,
             payload.move_type,
             payload.limit,
         )
+        audit_action("find_pending_invoices", uid, "account.move", [])
+        return result
 
 
 @mcp.tool()
@@ -475,9 +485,11 @@ def odoo_get_invoice_summary(payload: GetInvoiceSummarySchema) -> dict:
     """Get complete details of a specific invoice (account.move), including lines."""
     with measure_time("odoo_get_invoice_summary"):
         client = get_odoo_client()
-        return get_invoice_summary(
-            client, payload.sender_id or client.odoo_session.uid, payload.move_id
-        )
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("account.move")
+        result = get_invoice_summary(client, uid, payload.move_id)
+        audit_action("get_invoice_summary", uid, "account.move", [payload.move_id])
+        return result
 
 
 @mcp.tool()
@@ -626,9 +638,11 @@ def odoo_create_calendar_event(payload: CreateCalendarEventSchema) -> int:
     """Creates a calendar event (appointment or meeting) handling multiple attendees automatically."""
     with measure_time("odoo_create_calendar_event"):
         client = get_odoo_client()
-        return create_calendar_event(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("calendar.event")
+        result = create_calendar_event(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             name=payload.name,
             start=payload.start,
             stop=payload.stop,
@@ -636,6 +650,13 @@ def odoo_create_calendar_event(payload: CreateCalendarEventSchema) -> int:
             allday=payload.allday,
             description=payload.description,
         )
+        audit_action(
+            "create_calendar_event",
+            uid,
+            "calendar.event",
+            [result] if isinstance(result, int) else [],
+        )
+        return result
 
 
 @mcp.tool()
@@ -643,12 +664,18 @@ def odoo_create_sale_order(payload: CreateSaleOrderSchema) -> int:
     """Creates a sale order (presupuesto) for a customer with product lines."""
     with measure_time("odoo_create_sale_order"):
         client = get_odoo_client()
-        return create_sale_order(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("sale.order")
+        result = create_sale_order(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             partner_id=payload.partner_id,
             lines=payload.lines,
         )
+        audit_action(
+            "create_sale_order", uid, "sale.order", [result] if isinstance(result, int) else []
+        )
+        return result
 
 
 @mcp.tool()
@@ -656,11 +683,15 @@ def odoo_confirm_sale_order(payload: ConfirmSaleOrderSchema) -> bool:
     """Confirms a sale order, moving it from draft/sent to 'sale' status."""
     with measure_time("odoo_confirm_sale_order"):
         client = get_odoo_client()
-        return confirm_sale_order(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("sale.order")
+        result = confirm_sale_order(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             order_id=payload.order_id,
         )
+        audit_action("confirm_sale_order", uid, "sale.order", [payload.order_id])
+        return result
 
 
 @mcp.tool()
@@ -668,15 +699,19 @@ def odoo_create_lead(payload: CreateLeadSchema) -> int:
     """Creates a new CRM Lead / Opportunity."""
     with measure_time("odoo_create_lead"):
         client = get_odoo_client()
-        return create_lead(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("crm.lead")
+        result = create_lead(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             name=payload.name,
             partner_id=payload.partner_id,
             expected_revenue=payload.expected_revenue,
             probability=payload.probability,
             description=payload.description,
         )
+        audit_action("create_lead", uid, "crm.lead", [result] if isinstance(result, int) else [])
+        return result
 
 
 @mcp.tool()
@@ -684,12 +719,16 @@ def odoo_get_product_stock(payload: GetProductStockSchema) -> list:
     """Returns stock quantities (on hand, reserved) for a given product."""
     with measure_time("odoo_get_product_stock"):
         client = get_odoo_client()
-        return get_product_stock(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("stock.quant")
+        result = get_product_stock(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             product_id=payload.product_id,
             location_id=payload.location_id,
         )
+        audit_action("get_product_stock", uid, "stock.quant", [])
+        return result
 
 
 @mcp.tool()
@@ -697,9 +736,11 @@ def odoo_log_timesheet(payload: LogTimesheetSchema) -> int:
     """Logs a timesheet entry for a project or task."""
     with measure_time("odoo_log_timesheet"):
         client = get_odoo_client()
-        return log_timesheet(
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("account.analytic.line")
+        result = log_timesheet(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
+            sender_id=uid,
             project_id=payload.project_id,
             name=payload.name,
             unit_amount=payload.unit_amount,
@@ -707,6 +748,13 @@ def odoo_log_timesheet(payload: LogTimesheetSchema) -> int:
             task_id=payload.task_id,
             employee_id=payload.employee_id,
         )
+        audit_action(
+            "log_timesheet",
+            uid,
+            "account.analytic.line",
+            [result] if isinstance(result, int) else [],
+        )
+        return result
 
 
 @mcp.tool()
@@ -716,7 +764,6 @@ def odoo_register_payment(payload: RegisterPaymentSchema) -> bool:
         client = get_odoo_client()
         return register_payment(
             client=client,
-            sender_id=payload.sender_id or client.odoo_session.uid,
             invoice_id=payload.invoice_id,
             amount=payload.amount,
             payment_date=payload.payment_date,

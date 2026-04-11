@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 1. **Update your dependencies:**
    ```bash
-   pip install --upgrade odoo-mcp==2.0.0
+   pip install --upgrade odooclaw-mcp==2.0.0
    ```
 
 2. **Remove custom Odoo modules:**
@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[2.0.0]: https://github.com/nicolasramos/odoo-mcp/releases/tag/v2.0.0
+[2.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.0.0
 
 ## [1.0.0] - 2026-04-03
 
@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 14 domain services for business logic
 - 5 dynamic MCP resources
 - Native Odoo security delegation via `/odooclaw/call_kw_as_user`
-- Model allowlist with 28 approved models
+- Model allowlist with 18 approved models
 - Field denylist for protected fields
 - Complete security guards (model access, write fields, unlink, actions)
 - Structured logging and performance metrics
@@ -120,16 +120,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security tests
 - Coverage reporting (>80% target)
 
-## [Unreleased]
+## [2.1.0] - 2026-04-11
 
-### Planned Features
-- Additional Odoo model support
-- Enhanced error handling
-- Performance optimizations
-- Additional business services
-- Web UI for testing tools
-- Docker container support
+### Changed
+- Renamed PyPI package from `odoo-mcp` to `odooclaw-mcp` (backward-compatible aliases preserved)
+- Added `guard_model_access` and `audit_action` to all 9 service-calling tools (calendar, sales, CRM, inventory, HR, invoice)
+- `observability/logging.py` now reads `LOG_LEVEL` environment variable instead of hardcoding `INFO`
+- Fixed `sender_id` parameter bugs in `invoice_service.register_payment`, `sales_service.create_sale_order`, `sales_service.confirm_sale_order`
+- Removed stale `sender_id=` kwargs from `invoice_service` call_kw calls
+
+### Added
+- Guard wiring tests verifying tools reject disallowed models
+- `odooclaw-mcp` as primary CLI entry point
+- Docker image published to `ghcr.io/nicolasramos/odooclaw-mcp`
+- CI workflow with automated PyPI and ghcr.io publishing on tags
 
 ---
 
-[1.0.0]: https://github.com/nicolasramos/odoo-mcp/releases/tag/v1.0.0
+[2.1.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.1.0

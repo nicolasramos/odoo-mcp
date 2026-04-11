@@ -113,7 +113,6 @@ def test_odoo_create_partner_creates_when_no_match(mock_client):
                 "res.partner",
                 "create",
                 args=[{"name": "Julio Iglesias"}],
-                sender_id=5,
             ),
         ]
     )

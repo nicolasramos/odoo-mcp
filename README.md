@@ -1,13 +1,14 @@
-# Odoo MCP
+# OdooClaw MCP
 
 Standalone MCP (Model Context Protocol) server for Odoo 18 over `stdio`.
 
 **MCP name:** `io.github.nicolasramos/odoo-mcp`  
-**PyPI package:** `odoo-mcp`  
-**Official CLI:** `odoo-mcp`
+**PyPI package:** `odooclaw-mcp`  
+**Official CLI:** `odooclaw-mcp`
 
 Backward-compatible aliases are also installed:
 
+- `odoo-mcp`
 - `odoo-mcp-server`
 - `odoo-18-mcp-server`
 
@@ -16,14 +17,14 @@ Backward-compatible aliases are also installed:
 ### 1) Install
 
 ```bash
-pip install odoo-mcp
+pip install odooclaw-mcp
 ```
 
 From source:
 
 ```bash
-git clone https://github.com/nicolasramos/odoo-mcp.git
-cd odoo-mcp
+git clone https://github.com/nicolasramos/odooclaw-mcp.git
+cd odooclaw-mcp
 pip install -e .
 ```
 
@@ -53,8 +54,8 @@ LOG_LEVEL=INFO
 ### 3) Validate and run
 
 ```bash
-odoo-mcp --check-config
-odoo-mcp
+odooclaw-mcp --check-config
+odooclaw-mcp
 ```
 
 Alternative:
@@ -69,7 +70,7 @@ python -m odoo_mcp
 {
   "mcpServers": {
     "odoo": {
-      "command": "odoo-mcp",
+      "command": "odooclaw-mcp",
       "env": {
         "ODOO_URL": "https://yourcompany.odoo.com",
         "ODOO_DB": "your_database",
