@@ -86,11 +86,106 @@ python -m odoo_mcp
 
 ## Scope
 
-- 38+ MCP tools for Odoo operations (CRUD + business actions)
+- 39 MCP tools for Odoo operations (CRUD + business actions)
 - Pydantic validation for all tool payloads
 - Odoo 18 compatibility helpers (customer_rank / supplier_rank / payment_state)
 - Security guards (model allowlist, denylisted fields, action guard, unlink blocked)
 - Structured logging and audit actions
+
+## Available Tools
+
+The server currently exposes **39 MCP tools**.
+
+### Core record operations
+
+| Tool | Purpose |
+|---|---|
+| `odoo_search` | Search records in an allowed model using Odoo domain syntax. |
+| `odoo_read` | Read selected fields from specific record IDs. |
+| `odoo_search_read` | Combined search + read for efficient retrieval. |
+| `odoo_create` | Create a new record in an allowed model. |
+| `odoo_write` | Update existing records in an allowed model. |
+| `odoo_invoke_action` | Invoke an Odoo model method such as `action_*` or `button_*`. |
+| `odoo_get_record_summary` | Return a compact, human-friendly summary for a record. |
+
+### Partners, sales, and CRM
+
+| Tool | Purpose |
+|---|---|
+| `odoo_find_partner` | Find a customer or vendor by name, VAT, or email. |
+| `odoo_get_partner_summary` | Get a partner overview with useful business context. |
+| `odoo_find_sale_order` | Search sale orders by name, partner, or state. |
+| `odoo_get_sale_order_summary` | Retrieve a sale order summary including lines. |
+| `odoo_create_sale_order` | Create a quotation / sale order with product lines. |
+| `odoo_confirm_sale_order` | Confirm a quotation into a sale order. |
+| `odoo_create_lead` | Create a CRM lead / opportunity. |
+
+### Accounting, purchasing, and payments
+
+| Tool | Purpose |
+|---|---|
+| `odoo_create_purchase_order` | Create a purchase order from partner and line data. |
+| `odoo_create_vendor_invoice` | Create a vendor bill. |
+| `odoo_find_pending_invoices` | Find posted invoices or bills pending payment using Odoo 18 semantics. |
+| `odoo_get_invoice_summary` | Get a detailed summary of an invoice or bill. |
+| `odoo_register_payment` | Register a payment for a specific invoice. |
+
+### Projects, activities, and chatter
+
+| Tool | Purpose |
+|---|---|
+| `odoo_find_task` | Search project tasks by name, project, or stage. |
+| `odoo_create_task` | Create a new project task. |
+| `odoo_update_task` | Update task stage, assignee, or deadline. |
+| `odoo_create_activity` | Schedule an activity on a record. |
+| `odoo_list_pending_activities` | List pending activities, optionally filtered by model or assignee. |
+| `odoo_mark_activity_done` | Mark an activity as completed. |
+| `odoo_post_chatter_message` | Post a chatter message on a record. |
+| `odoo_create_activity_summary` | Create a summary-style activity for follow-up. |
+| `odoo_close_activity_with_reason` | Close an activity and record the reason. |
+| `odoo_log_timesheet` | Log a timesheet entry for a project or task. |
+
+### Support, contracts, stock, and instance capabilities
+
+| Tool | Purpose |
+|---|---|
+| `odoo_get_capabilities` | Report which modules and capabilities are available in the connected instance. |
+| `odoo_create_helpdesk_ticket` | Create a helpdesk ticket directly. |
+| `odoo_create_helpdesk_ticket_from_partner` | Create a helpdesk ticket linked to a partner. |
+| `odoo_draft_ticket_email` | Prepare a draft support email from a ticket context. |
+| `odoo_create_contract_line` | Add a line to a contract. |
+| `odoo_replace_contract_line` | Replace an existing contract line with a new one. |
+| `odoo_close_contract_line` | Close a contract line with a reason and close date. |
+| `odoo_get_product_stock` | Inspect stock quantities for a product. |
+| `odoo_create_calendar_event` | Create a meeting or appointment with attendees. |
+
+### Introspection
+
+| Tool | Purpose |
+|---|---|
+| `odoo_get_model_schema` | Inspect the fields and schema of a model such as `res.partner` or `account.move`. |
+
+## Available Resources
+
+The server also exposes **5 MCP resources** for discovery and context:
+
+| Resource | Purpose |
+|---|---|
+| `odoo://context/odoo18-fields-reference` | Odoo 18 field reference for common model/domain pitfalls such as `customer_rank`, `supplier_rank`, and `payment_state`. |
+| `odoo://models` | JSON list of models currently allowed by the security policy. |
+| `odoo://model/{model_name}/schema` | Technical schema for a specific Odoo model. |
+| `odoo://record/{model}/{id}/summary` | JSON summary of a specific record. |
+| `odoo://record/{model}/{id}/chatter_summary` | Summary of the chatter history for a specific record. |
+
+## Guardrails and Runtime Behavior
+
+- Uses standard Odoo JSON-RPC endpoints; it does not depend on OdooClaw delegation.
+- Tool payloads are validated with Pydantic before execution.
+- Model access is restricted by an allowlist defined in the server configuration.
+- Sensitive write fields are denylisted and `unlink` is blocked.
+- Search-style tools use default and maximum limits (`ODOO_MCP_DEFAULT_LIMIT`, `ODOO_MCP_MAX_LIMIT`).
+- `sender_id` is treated as audit/context metadata; execution runs as the authenticated Odoo session user.
+- Some tools require the corresponding Odoo apps/modules to be installed (CRM, Helpdesk, Projects, Contracts, Inventory, etc.).
 
 ## Security Model
 
