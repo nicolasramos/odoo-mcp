@@ -16,7 +16,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                      Layer 5: Tools                         │
-│     38+ MCP tools (CRUD, business operations, etc.)        │
+│      39 MCP tools (CRUD, business operations, etc.)        │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -141,7 +141,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 - `business_ops.py` - Complex business operations
 
 **Key Features**:
-- 38+ MCP tools registered
+- 39 MCP tools registered
 - Automatic performance metrics
 - Context delegation (sender_id)
 - Schema validation
@@ -176,6 +176,28 @@ LLM Request → MCP Protocol → Tool (Layer 5)
     → Odoo RPC → Native Odoo Security
     → Response → Reverse Path → LLM
 ```
+
+### MCP Tool Input Contract
+
+Tool calls are validated against Pydantic schemas that expect a top-level
+`payload` object inside MCP `arguments`.
+
+Canonical shape:
+
+```json
+{
+  "name": "odoo_search",
+  "arguments": {
+    "payload": {
+      "model": "res.partner",
+      "domain": [["customer_rank", ">", 0]],
+      "limit": 3
+    }
+  }
+}
+```
+
+If `payload` is missing, request validation fails (for example: `Field required: payload`).
 
 ### Security Flow
 

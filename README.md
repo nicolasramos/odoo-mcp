@@ -84,6 +84,29 @@ python -m odoo_mcp
 }
 ```
 
+### Tool call payload contract
+
+When calling tools through the MCP protocol, arguments must be wrapped in a
+top-level `payload` object.
+
+Valid shape:
+
+```json
+{
+  "name": "odoo_search",
+  "arguments": {
+    "payload": {
+      "model": "res.partner",
+      "domain": [["customer_rank", ">", 0]],
+      "limit": 3
+    }
+  }
+}
+```
+
+If `payload` is omitted, validation fails with an error equivalent to
+`Field required: payload`.
+
 ## Scope
 
 - 39 MCP tools for Odoo operations (CRUD + business actions)
