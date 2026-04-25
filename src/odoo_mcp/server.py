@@ -45,6 +45,8 @@ from odoo_mcp.schemas.business import (
     FindTaskSchema,
     CreateTaskSchema,
     UpdateTaskSchema,
+    FindMyTasksSchema,
+    UpdateTaskStatusSchema,
     FindSaleOrderSchema,
     GetSaleOrderSummarySchema,
     GetRecordSummarySchema,
@@ -57,7 +59,51 @@ from odoo_mcp.schemas.business import (
     CreateLeadSchema,
     GetProductStockSchema,
     LogTimesheetSchema,
+    FindAttendanceSchema,
+    LogTaskTimesheetSchema,
+    CheckInSchema,
+    CheckOutSchema,
+    GetMyTodaySummarySchema,
+    CreateExpenseReportSchema,
+    SubmitExpenseReportSchema,
+    ApproveExpenseSchema,
+    FindMissingTimesheetsSchema,
+    SuggestTimesheetFromAttendanceSchema,
+    NotifyPendingActionsSchema,
     RegisterPaymentSchema,
+    FindUnreconciledBankLinesSchema,
+    SuggestBankReconciliationSchema,
+    ReconcileBankLineSchema,
+    RegisterInvoicePaymentSchema,
+    GetARAPAgingSchema,
+    RunPeriodCloseChecksSchema,
+    CreateJournalEntrySchema,
+    PostJournalEntrySchema,
+    GetTaxSummarySchema,
+    ValidateVendorBillDuplicateSchema,
+    SuggestExpenseAccountAndTaxesSchema,
+    CreateVendorBillFromOCRValidatedSchema,
+    GetViewByXmlIdSchema,
+    FindViewsByModelSchema,
+    GetReportTemplateSchema,
+    ScanViewMigrationIssuesSchema,
+    ScanReportMigrationIssuesSchema,
+    ProposeViewPatchSchema,
+    ProposeReportPatchSchema,
+    ValidateViewPatchSchema,
+    ValidateReportPatchSchema,
+    PreviewViewPatchSchema,
+    PreviewReportPatchSchema,
+    TestViewCompilationSchema,
+    ApplyViewPatchSafeSchema,
+    ApplyReportPatchSafeSchema,
+    RollbackPatchSafeSchema,
+    AssistViewMigrationSchema,
+    AssistReportMigrationSchema,
+    VisualizeViewPatchSchema,
+    VisualizeReportPatchSchema,
+    BatchAssistViewMigrationSchema,
+    BatchAssistReportMigrationSchema,
     GetCapabilitiesSchema,
     CreateHelpdeskTicketSchema,
     CreateHelpdeskTicketFromPartnerSchema,
@@ -73,11 +119,59 @@ from odoo_mcp.services.invoice_service import (
     get_invoice_summary,
     register_payment,
 )
+from odoo_mcp.services.accounting_service import (
+    find_unreconciled_bank_lines,
+    suggest_bank_reconciliation,
+    reconcile_bank_line,
+    register_invoice_payment,
+    get_ar_ap_aging,
+    run_period_close_checks,
+    create_journal_entry,
+    post_journal_entry,
+    get_tax_summary,
+    validate_vendor_bill_duplicate,
+    suggest_expense_account_and_taxes,
+    create_vendor_bill_from_ocr_validated,
+)
 from odoo_mcp.services.calendar_service import create_calendar_event
 from odoo_mcp.services.sales_service import create_sale_order, confirm_sale_order
 from odoo_mcp.services.crm_service import create_lead
 from odoo_mcp.services.inventory_service import get_product_stock
-from odoo_mcp.services.hr_service import log_timesheet
+from odoo_mcp.services.hr_service import log_timesheet, find_attendance, log_task_timesheet
+from odoo_mcp.services.workforce_service import (
+    check_in,
+    check_out,
+    get_my_today_summary,
+    create_expense_report,
+    submit_expense_report,
+    approve_expense,
+    find_missing_timesheets,
+    suggest_timesheet_from_attendance,
+    notify_pending_actions,
+)
+from odoo_mcp.services.view_migration_service import (
+    get_view_by_xmlid,
+    find_views_by_model,
+    get_report_template,
+    scan_view_migration_issues,
+    scan_report_migration_issues,
+    propose_view_patch,
+    propose_report_patch,
+    validate_view_patch,
+    validate_report_patch,
+    preview_view_patch,
+    preview_report_patch,
+    test_view_compilation,
+    apply_view_patch_safe,
+    apply_report_patch_safe,
+    rollback_patch_safe,
+    assist_view_migration,
+    assist_report_migration,
+    visualize_view_patch,
+    visualize_report_patch,
+    batch_assist_view_migration,
+    batch_assist_report_migration,
+)
 
 _logger = get_logger("server")
 mcp = FastMCP("odooclaw-mcp")
@@ -390,6 +484,35 @@ def odoo_update_task(payload: UpdateTaskSchema) -> bool:
             payload.stage_id,
             payload.assigned_to,
             payload.deadline,
+        )
+
+
+@mcp.tool()
+def odoo_find_my_tasks(payload: FindMyTasksSchema) -> list:
+    with measure_time("odoo_find_my_tasks"):
+        client = get_odoo_client()
+        return projects.odoo_find_my_tasks(
+            client,
+            payload.sender_id or client.odoo_session.uid,
+            payload.project_id,
+            payload.state,
+            payload.date_deadline_from,
+            payload.date_deadline_to,
+            payload.limit,
+        )
+
+
+@mcp.tool()
+def odoo_update_task_status(payload: UpdateTaskStatusSchema) -> dict:
+    with measure_time("odoo_update_task_status"):
+        client = get_odoo_client()
+        return projects.odoo_update_task_status(
+            client,
+            payload.sender_id or client.odoo_session.uid,
+            payload.task_id,
+            payload.stage_id,
+            payload.stage_name,
+            payload.comment,
         )
 
 
@@ -758,6 +881,226 @@ def odoo_log_timesheet(payload: LogTimesheetSchema) -> int:
 
 
 @mcp.tool()
+def odoo_find_attendance(payload: FindAttendanceSchema) -> list:
+    with measure_time("odoo_find_attendance"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        result = find_attendance(
+            client=client,
+            sender_id=uid,
+            user_id=payload.user_id,
+            employee_id=payload.employee_id,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+            limit=payload.limit,
+        )
+        audit_action("find_attendance", uid, "hr.attendance", [])
+        return result
+
+
+@mcp.tool()
+def odoo_log_task_timesheet(payload: LogTaskTimesheetSchema) -> int:
+    with measure_time("odoo_log_task_timesheet"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("project.task")
+        guard_model_access("account.analytic.line")
+        result = log_task_timesheet(
+            client=client,
+            sender_id=uid,
+            task_id=payload.task_id,
+            name=payload.name,
+            unit_amount=payload.unit_amount,
+            employee_id=payload.employee_id,
+            date=payload.date,
+        )
+        audit_action(
+            "log_task_timesheet",
+            uid,
+            "account.analytic.line",
+            [result] if isinstance(result, int) else [],
+            {"task_id": payload.task_id},
+        )
+        return result
+
+
+@mcp.tool()
+def odoo_check_in(payload: CheckInSchema) -> dict:
+    with measure_time("odoo_check_in"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        result = check_in(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+            check_in_at=payload.check_in_at,
+        )
+        audit_action(
+            "check_in",
+            uid,
+            "hr.attendance",
+            [result.get("attendance_id")] if isinstance(result, dict) and result.get("attendance_id") else [],
+        )
+        return result
+
+
+@mcp.tool()
+def odoo_check_out(payload: CheckOutSchema) -> dict:
+    with measure_time("odoo_check_out"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        result = check_out(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+            check_out_at=payload.check_out_at,
+        )
+        audit_action(
+            "check_out",
+            uid,
+            "hr.attendance",
+            [result.get("attendance_id")] if isinstance(result, dict) and result.get("attendance_id") else [],
+        )
+        return result
+
+
+@mcp.tool()
+def odoo_get_my_today_summary(payload: GetMyTodaySummarySchema) -> dict:
+    with measure_time("odoo_get_my_today_summary"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        result = get_my_today_summary(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+        )
+        audit_action("get_my_today_summary", uid, "hr.attendance", [])
+        return result
+
+
+@mcp.tool()
+def odoo_find_missing_timesheets(payload: FindMissingTimesheetsSchema) -> list:
+    with measure_time("odoo_find_missing_timesheets"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        guard_model_access("account.analytic.line")
+        result = find_missing_timesheets(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+            tolerance_hours=payload.tolerance_hours,
+        )
+        audit_action("find_missing_timesheets", uid, "account.analytic.line", [])
+        return result
+
+
+@mcp.tool()
+def odoo_suggest_timesheet_from_attendance(
+    payload: SuggestTimesheetFromAttendanceSchema,
+) -> dict:
+    with measure_time("odoo_suggest_timesheet_from_attendance"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        guard_model_access("account.analytic.line")
+        result = suggest_timesheet_from_attendance(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+            tolerance_hours=payload.tolerance_hours,
+        )
+        audit_action("suggest_timesheet_from_attendance", uid, "account.analytic.line", [])
+        return result
+
+
+@mcp.tool()
+def odoo_create_expense_report(payload: CreateExpenseReportSchema) -> dict:
+    with measure_time("odoo_create_expense_report"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.expense")
+        guard_model_access("hr.expense.sheet")
+        result = create_expense_report(
+            client=client,
+            sender_id=uid,
+            name=payload.name,
+            expense_ids=payload.expense_ids,
+            employee_id=payload.employee_id,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+        )
+        audit_action(
+            "create_expense_report",
+            uid,
+            "hr.expense.sheet",
+            [result.get("sheet_id")] if isinstance(result, dict) and result.get("sheet_id") else [],
+        )
+        return result
+
+
+@mcp.tool()
+def odoo_submit_expense_report(payload: SubmitExpenseReportSchema) -> dict:
+    with measure_time("odoo_submit_expense_report"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.expense.sheet")
+        result = submit_expense_report(
+            client=client,
+            sender_id=uid,
+            sheet_id=payload.sheet_id,
+        )
+        audit_action("submit_expense_report", uid, "hr.expense.sheet", [payload.sheet_id])
+        return result
+
+
+@mcp.tool()
+def odoo_approve_expense(payload: ApproveExpenseSchema) -> dict:
+    with measure_time("odoo_approve_expense"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.expense.sheet")
+        result = approve_expense(
+            client=client,
+            sender_id=uid,
+            sheet_id=payload.sheet_id,
+            approve=payload.approve,
+            reason=payload.reason,
+        )
+        audit_action(
+            "approve_expense" if payload.approve else "reject_expense",
+            uid,
+            "hr.expense.sheet",
+            [payload.sheet_id],
+        )
+        return result
+
+
+@mcp.tool()
+def odoo_notify_pending_actions(payload: NotifyPendingActionsSchema) -> dict:
+    with measure_time("odoo_notify_pending_actions"):
+        client = get_odoo_client()
+        uid = payload.sender_id or client.odoo_session.uid
+        guard_model_access("hr.attendance")
+        result = notify_pending_actions(
+            client=client,
+            sender_id=uid,
+            employee_id=payload.employee_id,
+            days_back=payload.days_back,
+        )
+        audit_action("notify_pending_actions", uid, "hr.attendance", [])
+        return result
+
+
+@mcp.tool()
 def odoo_register_payment(payload: RegisterPaymentSchema) -> bool:
     """Registers a payment for a specific customer or vendor invoice."""
     with measure_time("odoo_register_payment"):
@@ -768,4 +1111,476 @@ def odoo_register_payment(payload: RegisterPaymentSchema) -> bool:
             amount=payload.amount,
             payment_date=payload.payment_date,
             journal_id=payload.journal_id,
+        )
+
+
+@mcp.tool()
+def odoo_find_unreconciled_bank_lines(payload: FindUnreconciledBankLinesSchema) -> dict:
+    with measure_time("odoo_find_unreconciled_bank_lines"):
+        client = get_odoo_client()
+        return find_unreconciled_bank_lines(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            journal_id=payload.journal_id,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+            amount_min=payload.amount_min,
+            amount_max=payload.amount_max,
+            limit=payload.limit,
+        )
+
+
+@mcp.tool()
+def odoo_suggest_bank_reconciliation(payload: SuggestBankReconciliationSchema) -> dict:
+    with measure_time("odoo_suggest_bank_reconciliation"):
+        client = get_odoo_client()
+        return suggest_bank_reconciliation(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            statement_line_id=payload.statement_line_id,
+            tolerance_amount=payload.tolerance_amount,
+            days_window=payload.days_window,
+            limit=payload.limit,
+        )
+
+
+@mcp.tool()
+def odoo_reconcile_bank_line(payload: ReconcileBankLineSchema) -> dict:
+    with measure_time("odoo_reconcile_bank_line"):
+        client = get_odoo_client()
+        return reconcile_bank_line(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            statement_line_id=payload.statement_line_id,
+            move_line_ids=payload.move_line_ids,
+            confirm=payload.confirm,
+        )
+
+
+@mcp.tool()
+def odoo_register_invoice_payment(payload: RegisterInvoicePaymentSchema) -> dict:
+    with measure_time("odoo_register_invoice_payment"):
+        client = get_odoo_client()
+        return register_invoice_payment(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            invoice_id=payload.invoice_id,
+            amount=payload.amount,
+            payment_date=payload.payment_date,
+            journal_id=payload.journal_id,
+            memo=payload.memo,
+        )
+
+
+@mcp.tool()
+def odoo_get_ar_ap_aging(payload: GetARAPAgingSchema) -> dict:
+    with measure_time("odoo_get_ar_ap_aging"):
+        client = get_odoo_client()
+        return get_ar_ap_aging(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            report_type=payload.report_type,
+            as_of=payload.as_of,
+            company_id=payload.company_id,
+            limit=payload.limit,
+        )
+
+
+@mcp.tool()
+def odoo_run_period_close_checks(payload: RunPeriodCloseChecksSchema) -> dict:
+    with measure_time("odoo_run_period_close_checks"):
+        client = get_odoo_client()
+        return run_period_close_checks(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            period_start=payload.period_start,
+            period_end=payload.period_end,
+            company_id=payload.company_id,
+        )
+
+
+@mcp.tool()
+def odoo_create_journal_entry(payload: CreateJournalEntrySchema) -> dict:
+    with measure_time("odoo_create_journal_entry"):
+        client = get_odoo_client()
+        return create_journal_entry(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            journal_id=payload.journal_id,
+            entry_date=payload.date,
+            lines=[line.model_dump(exclude_none=True) for line in payload.lines],
+            ref=payload.ref,
+            company_id=payload.company_id,
+        )
+
+
+@mcp.tool()
+def odoo_post_journal_entry(payload: PostJournalEntrySchema) -> dict:
+    with measure_time("odoo_post_journal_entry"):
+        client = get_odoo_client()
+        return post_journal_entry(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            move_id=payload.move_id,
+            confirm=payload.confirm,
+        )
+
+
+@mcp.tool()
+def odoo_get_tax_summary(payload: GetTaxSummarySchema) -> dict:
+    with measure_time("odoo_get_tax_summary"):
+        client = get_odoo_client()
+        return get_tax_summary(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            date_from=payload.date_from,
+            date_to=payload.date_to,
+            company_id=payload.company_id,
+            tax_group_id=payload.tax_group_id,
+        )
+
+
+@mcp.tool()
+def odoo_validate_vendor_bill_duplicate(
+    payload: ValidateVendorBillDuplicateSchema,
+) -> dict:
+    with measure_time("odoo_validate_vendor_bill_duplicate"):
+        client = get_odoo_client()
+        return validate_vendor_bill_duplicate(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            partner_id=payload.partner_id,
+            vendor_bill_number=payload.vendor_bill_number,
+            invoice_date=payload.invoice_date,
+            amount_total=payload.amount_total,
+            currency_id=payload.currency_id,
+            tolerance=payload.tolerance,
+        )
+
+
+@mcp.tool()
+def odoo_suggest_expense_account_and_taxes(
+    payload: SuggestExpenseAccountAndTaxesSchema,
+) -> dict:
+    with measure_time("odoo_suggest_expense_account_and_taxes"):
+        client = get_odoo_client()
+        return suggest_expense_account_and_taxes(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            description=payload.description,
+            amount=payload.amount,
+            partner_id=payload.partner_id,
+            product_id=payload.product_id,
+            company_id=payload.company_id,
+        )
+
+
+@mcp.tool()
+def odoo_create_vendor_bill_from_ocr_validated(
+    payload: CreateVendorBillFromOCRValidatedSchema,
+) -> dict:
+    with measure_time("odoo_create_vendor_bill_from_ocr_validated"):
+        client = get_odoo_client()
+        return create_vendor_bill_from_ocr_validated(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            ocr_payload=payload.ocr_payload,
+            attachment_id=payload.attachment_id,
+            confirm=payload.confirm,
+            dry_run=payload.dry_run,
+            company_id=payload.company_id,
+            allowed_company_ids=payload.allowed_company_ids,
+        )
+
+
+@mcp.tool()
+def odoo_get_view_by_xmlid(payload: GetViewByXmlIdSchema) -> dict:
+    with measure_time("odoo_get_view_by_xmlid"):
+        client = get_odoo_client()
+        return get_view_by_xmlid(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            include_inherited_chain=payload.include_inherited_chain,
+        )
+
+
+@mcp.tool()
+def odoo_find_views_by_model(payload: FindViewsByModelSchema) -> dict:
+    with measure_time("odoo_find_views_by_model"):
+        client = get_odoo_client()
+        return find_views_by_model(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            model=payload.model,
+            view_type=payload.view_type,
+            limit=payload.limit,
+        )
+
+
+@mcp.tool()
+def odoo_get_report_template(payload: GetReportTemplateSchema) -> dict:
+    with measure_time("odoo_get_report_template"):
+        client = get_odoo_client()
+        return get_report_template(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+        )
+
+
+@mcp.tool()
+def odoo_scan_view_migration_issues(payload: ScanViewMigrationIssuesSchema) -> dict:
+    with measure_time("odoo_scan_view_migration_issues"):
+        client = get_odoo_client()
+        return scan_view_migration_issues(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            target_version=payload.target_version,
+            rule_sets=payload.rule_sets,
+        )
+
+
+@mcp.tool()
+def odoo_scan_report_migration_issues(payload: ScanReportMigrationIssuesSchema) -> dict:
+    with measure_time("odoo_scan_report_migration_issues"):
+        client = get_odoo_client()
+        return scan_report_migration_issues(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            target_version=payload.target_version,
+            rule_sets=payload.rule_sets,
+        )
+
+
+@mcp.tool()
+def odoo_propose_view_patch(payload: ProposeViewPatchSchema) -> dict:
+    with measure_time("odoo_propose_view_patch"):
+        client = get_odoo_client()
+        return propose_view_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            intent=payload.intent,
+            constraints=payload.constraints,
+        )
+
+
+@mcp.tool()
+def odoo_propose_report_patch(payload: ProposeReportPatchSchema) -> dict:
+    with measure_time("odoo_propose_report_patch"):
+        client = get_odoo_client()
+        return propose_report_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            intent=payload.intent,
+            constraints=payload.constraints,
+        )
+
+
+@mcp.tool()
+def odoo_validate_view_patch(payload: ValidateViewPatchSchema) -> dict:
+    with measure_time("odoo_validate_view_patch"):
+        client = get_odoo_client()
+        return validate_view_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            base_view_xmlid=payload.base_view_xmlid,
+            patch=payload.patch,
+            strict=payload.strict,
+            target_version=payload.target_version,
+        )
+
+
+@mcp.tool()
+def odoo_validate_report_patch(payload: ValidateReportPatchSchema) -> dict:
+    with measure_time("odoo_validate_report_patch"):
+        client = get_odoo_client()
+        return validate_report_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            report_xmlid=payload.report_xmlid,
+            patch=payload.patch,
+            strict=payload.strict,
+            target_version=payload.target_version,
+        )
+
+
+@mcp.tool()
+def odoo_preview_view_patch(payload: PreviewViewPatchSchema) -> dict:
+    with measure_time("odoo_preview_view_patch"):
+        client = get_odoo_client()
+        return preview_view_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            base_view_xmlid=payload.base_view_xmlid,
+            patch=payload.patch,
+            diff_format=payload.diff_format,
+        )
+
+
+@mcp.tool()
+def odoo_preview_report_patch(payload: PreviewReportPatchSchema) -> dict:
+    with measure_time("odoo_preview_report_patch"):
+        client = get_odoo_client()
+        return preview_report_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            report_xmlid=payload.report_xmlid,
+            patch=payload.patch,
+            diff_format=payload.diff_format,
+        )
+
+
+@mcp.tool()
+def odoo_test_view_compilation(payload: TestViewCompilationSchema) -> dict:
+    with measure_time("odoo_test_view_compilation"):
+        client = get_odoo_client()
+        return test_view_compilation(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            view_xmlid=payload.view_xmlid,
+            context=payload.context,
+        )
+
+
+@mcp.tool()
+def odoo_apply_view_patch_safe(payload: ApplyViewPatchSafeSchema) -> dict:
+    with measure_time("odoo_apply_view_patch_safe"):
+        client = get_odoo_client()
+        return apply_view_patch_safe(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            base_view_xmlid=payload.base_view_xmlid,
+            patch=payload.patch,
+            strict=payload.strict,
+            confirm=payload.confirm,
+            dry_run=payload.dry_run,
+            inherited_view_name=payload.inherited_view_name,
+            priority=payload.priority,
+        )
+
+
+@mcp.tool()
+def odoo_apply_report_patch_safe(payload: ApplyReportPatchSafeSchema) -> dict:
+    with measure_time("odoo_apply_report_patch_safe"):
+        client = get_odoo_client()
+        return apply_report_patch_safe(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            report_xmlid=payload.report_xmlid,
+            patch=payload.patch,
+            strict=payload.strict,
+            confirm=payload.confirm,
+            dry_run=payload.dry_run,
+            inherited_view_name=payload.inherited_view_name,
+            priority=payload.priority,
+        )
+
+
+@mcp.tool()
+def odoo_rollback_patch_safe(payload: RollbackPatchSafeSchema) -> dict:
+    with measure_time("odoo_rollback_patch_safe"):
+        client = get_odoo_client()
+        return rollback_patch_safe(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            snapshot=payload.snapshot,
+            confirm=payload.confirm,
+            dry_run=payload.dry_run,
+        )
+
+
+@mcp.tool()
+def odoo_assist_view_migration(payload: AssistViewMigrationSchema) -> dict:
+    with measure_time("odoo_assist_view_migration"):
+        client = get_odoo_client()
+        return assist_view_migration(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            target_version=payload.target_version,
+            intent=payload.intent,
+            constraints=payload.constraints,
+            strict=payload.strict,
+            include_compile_test=payload.include_compile_test,
+        )
+
+
+@mcp.tool()
+def odoo_assist_report_migration(payload: AssistReportMigrationSchema) -> dict:
+    with measure_time("odoo_assist_report_migration"):
+        client = get_odoo_client()
+        return assist_report_migration(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlid=payload.xmlid,
+            target_version=payload.target_version,
+            intent=payload.intent,
+            constraints=payload.constraints,
+            strict=payload.strict,
+        )
+
+
+@mcp.tool()
+def odoo_visualize_view_patch(payload: VisualizeViewPatchSchema) -> dict:
+    with measure_time("odoo_visualize_view_patch"):
+        client = get_odoo_client()
+        return visualize_view_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            base_view_xmlid=payload.base_view_xmlid,
+            patch=payload.patch,
+            diff_format=payload.diff_format,
+        )
+
+
+@mcp.tool()
+def odoo_visualize_report_patch(payload: VisualizeReportPatchSchema) -> dict:
+    with measure_time("odoo_visualize_report_patch"):
+        client = get_odoo_client()
+        return visualize_report_patch(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            report_xmlid=payload.report_xmlid,
+            patch=payload.patch,
+            diff_format=payload.diff_format,
+        )
+
+
+@mcp.tool()
+def odoo_batch_assist_view_migration(payload: BatchAssistViewMigrationSchema) -> dict:
+    with measure_time("odoo_batch_assist_view_migration"):
+        client = get_odoo_client()
+        return batch_assist_view_migration(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlids=payload.xmlids,
+            target_version=payload.target_version,
+            intent=payload.intent,
+            constraints=payload.constraints,
+            strict=payload.strict,
+            include_compile_test=payload.include_compile_test,
+            continue_on_error=payload.continue_on_error,
+        )
+
+
+@mcp.tool()
+def odoo_batch_assist_report_migration(
+    payload: BatchAssistReportMigrationSchema,
+) -> dict:
+    with measure_time("odoo_batch_assist_report_migration"):
+        client = get_odoo_client()
+        return batch_assist_report_migration(
+            client=client,
+            sender_id=payload.sender_id or client.odoo_session.uid,
+            xmlids=payload.xmlids,
+            target_version=payload.target_version,
+            intent=payload.intent,
+            constraints=payload.constraints,
+            strict=payload.strict,
+            continue_on_error=payload.continue_on_error,
         )

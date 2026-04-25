@@ -1,6 +1,7 @@
 """Services layer - Business logic for Odoo operations."""
 
 from odoo_mcp.services import (
+    accounting_service,
     calendar_service,
     capability_service,
     chatter_service,
@@ -15,10 +16,13 @@ from odoo_mcp.services import (
     project_service,
     purchase_service,
     sales_service,
+    view_migration_service,
+    workforce_service,
 )
 
 __all__ = [
     "calendar_service",
+    "accounting_service",
     "capability_service",
     "chatter_service",
     "contract_service",
@@ -32,4 +36,6 @@ __all__ = [
     "project_service",
     "purchase_service",
     "sales_service",
+    "view_migration_service",
+    "workforce_service",
 ]

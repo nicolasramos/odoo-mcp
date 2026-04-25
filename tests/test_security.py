@@ -15,7 +15,7 @@ def test_allowlist_failure():
         validate_model_access("ir.config_parameter")
 
     with pytest.raises(OdooSecurityError):
-        validate_model_access("account.payment")
+        validate_model_access("account.payment.term")
 
 
 def test_denylist_success():
