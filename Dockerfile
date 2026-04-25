@@ -2,8 +2,8 @@
 FROM python:3.11-slim
 
 LABEL maintainer="Nicolás Ramos <nicolasramos@users.noreply.github.com>"
-LABEL description="MCP server for Odoo 18 with 38 business tools"
-LABEL version="2.1.0"
+LABEL description="MCP server for Odoo 18 with 85 business tools"
+LABEL version="2.2.0"
 LABEL org.opencontainers.image.source="https://github.com/nicolasramos/odooclaw-mcp"
 LABEL org.opencontainers.image.title="odooclaw-mcp"
 LABEL org.opencontainers.image.description="Modular, type-safe, and secure MCP server for interacting with Odoo 18 ORM"

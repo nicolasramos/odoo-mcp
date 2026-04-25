@@ -1,7 +1,7 @@
 {
   "name": "@nicolasramos/odooclaw-mcp",
-  "version": "2.1.0",
-  "description": "Complete MCP server for Odoo 18 ERP with 38 tools for business operations",
+  "version": "2.2.0",
+  "description": "Complete MCP server for Odoo 18 ERP with 85 tools for business operations",
   "author": "Nicolás Ramos <nicolasramos@users.noreply.github.com>",
   "license": "MIT",
   "repository": {
