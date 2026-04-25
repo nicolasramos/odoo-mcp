@@ -16,12 +16,12 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                      Layer 5: Tools                         │
-│      39 MCP tools (CRUD, business operations, etc.)        │
+│      85 MCP tools (CRUD, business operations, etc.)        │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                     Layer 4: Services                       │
-│     14 domain services (partners, sales, invoices, etc.)   │
+│     17 domain services (partners, sales, invoices, etc.)   │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -87,7 +87,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 - `common.py` - Base schemas with user context
 - `records.py` - CRUD operation schemas
 - `actions.py` - Workflow action schemas
-- `business.py` - Business operation schemas (30+ schemas)
+- `business.py` - Business operation schemas (80+ schemas)
 
 **Key Features**:
 - Full Pydantic validation
@@ -100,7 +100,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 
 **Purpose**: Domain-specific business logic orchestration
 
-**Services** (14 total):
+**Services** (17 total):
 - `partner_service.py` - Partner/customer operations
 - `sales_service.py` - Sales order management
 - `purchase_service.py` - Purchase order creation
@@ -115,6 +115,9 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 - `chatter_service.py` - Chatter and activity management
 - `capability_service.py` - System capability queries
 - `generic_service.py` - Generic record operations
+- `workforce_service.py` - Workforce attendance, timesheets, and expenses
+- `accounting_service.py` - Advanced accounting and reconciliation workflows
+- `view_migration_service.py` - View/report migration analysis and safe patch workflows
 
 **Key Features**:
 - Business logic encapsulation
@@ -127,7 +130,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 
 **Purpose**: MCP protocol tools that expose functionality to LLMs
 
-**Tool Modules** (12 total):
+**Tool Modules** (11 total):
 - `records.py` - Generic CRUD tools
 - `actions.py` - Workflow action tools
 - `introspection.py` - Schema and capability tools
@@ -141,7 +144,7 @@ The Odoo MCP Server is built with a **6-layer architecture** that provides separ
 - `business_ops.py` - Complex business operations
 
 **Key Features**:
-- 39 MCP tools registered
+- 85 MCP tools registered
 - Automatic performance metrics
 - Context delegation (sender_id)
 - Schema validation
