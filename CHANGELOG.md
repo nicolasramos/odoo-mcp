@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-04-12
+
+### Added
+- Ported workforce tooling from OdooClaw into standalone server:
+  - attendance/time flows (`odoo_check_in`, `odoo_check_out`, `odoo_find_attendance`, `odoo_find_missing_timesheets`, `odoo_suggest_timesheet_from_attendance`)
+  - personal productivity flows (`odoo_get_my_today_summary`, `odoo_find_my_tasks`, `odoo_update_task_status`, `odoo_log_task_timesheet`, `odoo_notify_pending_actions`)
+  - expense flows (`odoo_create_expense_report`, `odoo_submit_expense_report`, `odoo_approve_expense`)
+- Ported advanced accounting tools:
+  - bank reconciliation (`odoo_find_unreconciled_bank_lines`, `odoo_suggest_bank_reconciliation`, `odoo_reconcile_bank_line`)
+  - AR/AP and close checks (`odoo_register_invoice_payment`, `odoo_get_ar_ap_aging`, `odoo_run_period_close_checks`)
+  - journal and tax utilities (`odoo_create_journal_entry`, `odoo_post_journal_entry`, `odoo_get_tax_summary`)
+  - bill validation/automation (`odoo_validate_vendor_bill_duplicate`, `odoo_suggest_expense_account_and_taxes`, `odoo_create_vendor_bill_from_ocr_validated`)
+- Ported full view/report migration tool suite (21 tools), including scan/propose/validate/preview/test/apply/rollback/assist/visualize/batch-assist flows.
+- Added new domain services:
+  - `services/workforce_service.py`
+  - `services/accounting_service.py`
+  - `services/view_migration_service.py`
+
+### Changed
+- Expanded model allowlist to cover workforce, advanced accounting, and migration-critical models.
+- Expanded schema layer (`schemas/business.py`, `schemas/__init__.py`) to include workforce, advanced accounting, and migration request models.
+- Expanded server wiring (`server.py`) to expose the full migrated tool surface.
+- Updated metadata/versioning to `2.2.0` and aligned package/registry descriptors with the new 85-tool surface.
+
+### Fixed
+- Updated security test expectation for allowlist denial to use a model that remains intentionally blocked after allowlist expansion.
+
 ## [2.1.0] - 2026-04-11
 
 ### Changed
@@ -132,8 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security tests
 - Coverage reporting (>80% target)
 
----
-
+[2.2.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.2.0
 [2.1.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.1.0
 [2.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v2.0.0
 [1.0.0]: https://github.com/nicolasramos/odooclaw-mcp/releases/tag/v1.0.0
